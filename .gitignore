@@ -1,0 +1,78 @@
+# .NET Core / Visual Studio
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+.vs-code/
+.vscode/launch.json
+.vscode/tasks.json
+# Note: Keeping .vscode/extensions.json or settings.json might be useful for teams, 
+# but usually launch/tasks are user-specific or environment-dependent. 
+# However, in this project, they are specifically configured for the dev environment.
+# I will allow .vscode for now unless requested otherwise, or just ignore the user-specific parts.
+
+# Node / React
+node_modules/
+dist/
+dist-ssr/
+*.local
+.eslintcache
+.stylelintcache
+.prettiercache
+.parcel-cache
+.next/
+out/
+build/
+.pnpm-debug.log*
+pnpm-lock.yaml
+# (Only if you prefer npm/yarn over pnpm)
+
+# Environment files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Databases (SQLite)
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+publish/
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Tt]humbs.db
+
+# User-specific tools
+.agent/
+.gemini/
+.antigravity/
+
+# Hardware / Driver artifacts
+*.bak
+*.tmp
+*.temp
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# User artifacts
+brain/
+implementation_plan.md
+task.md

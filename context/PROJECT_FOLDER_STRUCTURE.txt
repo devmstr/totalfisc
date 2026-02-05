@@ -1,0 +1,798 @@
+
+# TOTALFISC - PROJECT FOLDER STRUCTURE
+# Hybrid Desktop Application (WPF + ASP.NET Core + React)
+# Architecture: Clean Architecture + Domain-Driven Design
+
+═══════════════════════════════════════════════════════════════════════════════
+ROOT DIRECTORY STRUCTURE
+═══════════════════════════════════════════════════════════════════════════════
+
+TOTALFISC/
+│
+├── .github/                                    # GitHub Actions CI/CD
+│   └── workflows/
+│       ├── build.yml
+│       └── release.yml
+│
+├── docs/                                       # Documentation
+│   ├── architecture/
+│   │   ├── DATABASE_ARCHITECTURE_SUMMARY.md
+│   │   ├── totalfisc_erd.txt
+│   │   └── system-architecture.md
+│   ├── api/
+│   │   └── swagger/                           # Generated API docs
+│   ├── deployment/
+│   │   └── installation-guide.md
+│   └── user-guide/
+│       └── accounting-manual.md
+│
+├── src/                                        # Source code
+│   ├── TOTALFISC.Host/                  # WPF Desktop Host ⭐
+│   ├── TOTALFISC.Api/                   # ASP.NET Core API ⭐
+│   ├── TOTALFISC.Web/                   # React Frontend ⭐
+│   ├── TOTALFISC.Domain/                # Domain Layer (DDD) ⭐
+│   ├── TOTALFISC.Application/           # Application Layer (CQRS) ⭐
+│   ├── TOTALFISC.Infrastructure/        # Infrastructure Layer ⭐
+│   ├── TOTALFISC.Persistence/           # Database Layer ⭐
+│   └── TOTALFISC.Shared/                # Shared Utilities ⭐
+│
+├── tests/                                      # Test projects
+│   ├── TOTALFISC.Domain.Tests/
+│   ├── TOTALFISC.Application.Tests/
+│   ├── TOTALFISC.Api.Tests/
+│   ├── TOTALFISC.Integration.Tests/
+│   └── TOTALFISC.E2E.Tests/
+│
+├── tools/                                      # Development tools
+│   ├── migration/                             # PCCOMPTA migration tool
+│   │   └── ParadoxImporter/
+│   ├── seed-data/                             # Database seed scripts
+│   │   ├── scf-chart-of-accounts.json
+│   │   ├── journal-codes.json
+│   │   └── vat-rates.json
+│   └── code-generators/                       # Code generation templates
+│
+├── database/                                   # Database scripts
+│   ├── schema/
+│   │   └── totalfisc_schema.sql
+│   ├── migrations/
+│   ├── seed/
+│   └── backup/
+│
+├── assets/                                     # Static assets
+│   ├── icons/
+│   ├── images/
+│   └── fonts/
+│
+├── installer/                                  # Inno Setup installer
+│   ├── setup-script.iss
+│   ├── license.txt
+│   └── webview2-bootstrapper.exe
+│
+├── .editorconfig                              # Code style configuration
+├── .gitignore
+├── .gitattributes
+├── Directory.Build.props                       # Shared MSBuild properties
+├── Directory.Packages.props                    # Central Package Management
+├── global.json                                # .NET SDK version
+├── nuget.config                               # NuGet configuration
+├── TOTALFISC.sln                        # Visual Studio solution
+└── README.md
+
+═══════════════════════════════════════════════════════════════════════════════
+1. WPF HOST PROJECT (Desktop Container)
+═══════════════════════════════════════════════════════════════════════════════
+
+src/TOTALFISC.Host/
+│
+├── TOTALFISC.Host.csproj                # WPF project file
+│
+├── App.xaml                                   # Application entry point
+├── App.xaml.cs
+│
+├── MainWindow.xaml                            # Main window with WebView2
+├── MainWindow.xaml.cs
+│
+├── Services/                                   # Host-specific services
+│   ├── ApiHostingService.cs                   # Kestrel hosting service
+│   ├── HardwareService.cs                     # USB/Printer integration
+│   ├── LicenseValidationService.cs            # Node-locked licensing
+│   └── UpdateService.cs                       # Auto-update checker
+│
+├── Hardware/                                   # Hardware integration
+│   ├── BarcodeScanner/
+│   │   ├── ScannerManager.cs                  # WndProc hooking
+│   │   ├── HIDDevice.cs                       # HID device detection
+│   │   └── ScannerEventArgs.cs
+│   ├── ThermalPrinter/
+│   │   ├── ESCPOSPrinter.cs                   # ESC/POS command generator
+│   │   ├── SerialPrinter.cs                   # Serial port communication
+│   │   ├── NetworkPrinter.cs                  # TCP/IP communication
+│   │   └── PrinterModels/
+│   │       ├── EpsonTM88.cs
+│   │       └── ZebraPrinter.cs
+│   └── CashDrawer/
+│       └── DrawerController.cs
+│
+├── Native/                                     # P/Invoke declarations
+│   ├── NativeMethods.cs                       # Windows API imports
+│   ├── WM_INPUT.cs                            # Raw input structures
+│   └── HardwareIdentification.cs              # WMI hardware ID
+│
+├── Licensing/                                  # License management
+│   ├── LicenseValidator.cs
+│   ├── HardwareIdGenerator.cs                 # WMI-based ID
+│   └── RSASignatureVerifier.cs
+│
+├── Configuration/                              # Host configuration
+│   ├── appsettings.json
+│   ├── appsettings.Development.json
+│   └── appsettings.Production.json
+│
+├── Resources/                                  # Embedded resources
+│   ├── Icons/
+│   ├── Splash/
+│   └── WebApp/                                # Embedded React build (Release)
+│
+├── Helpers/
+│   ├── WebView2Helper.cs                      # WebView2 initialization
+│   ├── SystemTrayManager.cs                   # System tray icon
+│   └── WindowStateManager.cs                  # Window position persistence
+│
+└── Properties/
+    ├── AssemblyInfo.cs
+    └── Resources.resx
+
+═══════════════════════════════════════════════════════════════════════════════
+2. ASP.NET CORE API PROJECT (Backend Sidecar)
+═══════════════════════════════════════════════════════════════════════════════
+
+src/TOTALFISC.Api/
+│
+├── TOTALFISC.Api.csproj                 # API project file
+│
+├── Program.cs                                 # Application entry point
+├── Startup.cs                                 # Service configuration (optional)
+│
+├── Controllers/                               # API Controllers
+│   ├── AccountsController.cs                 # Chart of Accounts
+│   ├── JournalEntriesController.cs           # Journal entries CRUD
+│   ├── ThirdPartiesController.cs             # Clients/Suppliers
+│   ├── FiscalYearsController.cs              # Fiscal year management
+│   ├── ReportsController.cs                  # Financial reports
+│   ├── TaxController.cs                      # IRG/TVA calculations
+│   ├── InventoryController.cs                # Inventory management
+│   ├── BankReconciliationController.cs       # Bank reconciliation
+│   ├── UsersController.cs                    # User management
+│   └── SystemController.cs                   # System status/health
+│
+├── Hubs/                                      # SignalR Hubs
+│   ├── HardwareHub.cs                        # Hardware events (barcode, print)
+│   ├── NotificationHub.cs                    # Real-time notifications
+│   └── AuditHub.cs                           # Real-time audit log
+│
+├── Middleware/                                # Custom middleware
+│   ├── ExceptionHandlingMiddleware.cs        # Global exception handler
+│   ├── RequestLoggingMiddleware.cs           # Request/response logging
+│   ├── LicenseValidationMiddleware.cs        # License check on requests
+│   └── AuditMiddleware.cs                    # Audit trail middleware
+│
+├── Filters/                                   # Action filters
+│   ├── ValidateModelStateFilter.cs           # Model validation
+│   ├── TransactionFilter.cs                  # Auto-transaction management
+│   └── AuthorizationFilter.cs                # Custom authorization
+│
+├── Extensions/                                # Extension methods
+│   ├── ServiceCollectionExtensions.cs        # DI registration helpers
+│   ├── ApplicationBuilderExtensions.cs       # Middleware registration
+│   └── ControllerExtensions.cs
+│
+├── Configuration/                             # Configuration
+│   ├── appsettings.json
+│   ├── appsettings.Development.json
+│   ├── appsettings.Production.json
+│   └── nlog.config                           # Logging configuration
+│
+├── Models/                                    # API-specific models
+│   ├── Requests/                             # Request DTOs
+│   │   ├── CreateJournalEntryRequest.cs
+│   │   ├── UpdateAccountRequest.cs
+│   │   └── PostEntryRequest.cs
+│   ├── Responses/                            # Response DTOs
+│   │   ├── JournalEntryResponse.cs
+│   │   ├── AccountBalanceResponse.cs
+│   │   └── ApiResponse.cs
+│   └── Validators/                           # FluentValidation validators
+│       ├── CreateJournalEntryValidator.cs
+│       └── UpdateAccountValidator.cs
+│
+└── wwwroot/                                   # Static files (if needed)
+    └── swagger/                              # Swagger UI customization
+
+═══════════════════════════════════════════════════════════════════════════════
+3. REACT FRONTEND PROJECT
+═══════════════════════════════════════════════════════════════════════════════
+
+src/TOTALFISC.Web/
+│
+├── package.json                               # NPM dependencies
+├── package-lock.json
+├── tsconfig.json                              # TypeScript configuration
+├── tsconfig.node.json
+├── vite.config.ts                             # Vite configuration
+├── tailwind.config.js                         # Tailwind CSS v4 config
+├── postcss.config.js
+├── .eslintrc.cjs                              # ESLint configuration
+├── .prettierrc                                # Prettier configuration
+│
+├── index.html                                 # HTML entry point
+│
+├── public/                                    # Static public assets
+│   ├── favicon.ico
+│   ├── logo.svg
+│   └── robots.txt
+│
+├── src/
+│   ├── main.tsx                              # React entry point
+│   ├── App.tsx                               # Root component
+│   ├── vite-env.d.ts                         # Vite type declarations
+│   │
+│   ├── api/                                  # API client layer
+│   │   ├── client.ts                         # Axios configuration
+│   │   ├── interceptors.ts                   # Request/response interceptors
+│   │   ├── generated/                        # NSwag generated TypeScript client
+│   │   │   └── api-client.ts                 # Auto-generated from OpenAPI
+│   │   └── endpoints/                        # Manual endpoint wrappers
+│   │       ├── accounts.ts
+│   │       ├── journals.ts
+│   │       └── reports.ts
+│   │
+│   ├── components/                           # Reusable components
+│   │   ├── ui/                               # shadcn/ui components
+│   │   │   ├── button.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   ├── table.tsx
+│   │   │   ├── combobox.tsx
+│   │   │   └── ... (50+ shadcn components)
+│   │   ├── layout/
+│   │   │   ├── AppLayout.tsx                # Main layout wrapper
+│   │   │   ├── Sidebar.tsx                  # Navigation sidebar
+│   │   │   ├── Header.tsx                   # Top header
+│   │   │   └── Footer.tsx
+│   │   ├── forms/
+│   │   │   ├── FormField.tsx                # Reusable form field
+│   │   │   ├── FormSection.tsx
+│   │   │   └── ValidationMessage.tsx
+│   │   ├── grids/
+│   │   │   ├── VirtualizedGrid.tsx          # TanStack Table + Virtual
+│   │   │   ├── GridPagination.tsx
+│   │   │   └── GridToolbar.tsx
+│   │   └── common/
+│   │       ├── LoadingSpinner.tsx
+│   │       ├── ErrorBoundary.tsx
+│   │       ├── ConfirmDialog.tsx
+│   │       └── Toast.tsx
+│   │
+│   ├── features/                             # Feature modules
+│   │   ├── accounting/
+│   │   │   ├── components/
+│   │   │   │   ├── JournalEntryForm.tsx
+│   │   │   │   ├── JournalEntryGrid.tsx
+│   │   │   │   ├── AccountSelector.tsx      # Combobox for account selection
+│   │   │   │   └── LineEditor.tsx           # Inline line editing
+│   │   │   ├── hooks/
+│   │   │   │   ├── useJournalEntries.ts
+│   │   │   │   ├── useAccounts.ts
+│   │   │   │   └── useGridNavigation.ts     # Keyboard navigation FSM
+│   │   │   ├── pages/
+│   │   │   │   ├── JournalEntryList.tsx
+│   │   │   │   ├── JournalEntryDetail.tsx
+│   │   │   │   ├── GeneralLedger.tsx
+│   │   │   │   └── TrialBalance.tsx
+│   │   │   └── store/
+│   │   │       └── journalStore.ts          # Zustand store
+│   │   │
+│   │   ├── chart-of-accounts/
+│   │   │   ├── components/
+│   │   │   │   ├── AccountTree.tsx          # Hierarchical tree
+│   │   │   │   ├── AccountForm.tsx
+│   │   │   │   └── AccountBalances.tsx
+│   │   │   ├── hooks/
+│   │   │   │   └── useAccountHierarchy.ts
+│   │   │   ├── pages/
+│   │   │   │   ├── AccountList.tsx
+│   │   │   │   └── AccountDetail.tsx
+│   │   │   └── store/
+│   │   │       └── accountStore.ts
+│   │   │
+│   │   ├── third-parties/
+│   │   │   ├── components/
+│   │   │   │   ├── ThirdPartyForm.tsx
+│   │   │   │   ├── ThirdPartyGrid.tsx
+│   │   │   │   └── ThirdPartySelector.tsx
+│   │   │   ├── pages/
+│   │   │   │   ├── ClientList.tsx
+│   │   │   │   ├── SupplierList.tsx
+│   │   │   │   └── ThirdPartyDetail.tsx
+│   │   │   └── store/
+│   │   │       └── thirdPartyStore.ts
+│   │   │
+│   │   ├── reports/
+│   │   │   ├── components/
+│   │   │   │   ├── ReportViewer.tsx
+│   │   │   │   ├── ReportFilters.tsx
+│   │   │   │   └── ExportOptions.tsx
+│   │   │   ├── pages/
+│   │   │   │   ├── GeneralLedgerReport.tsx
+│   │   │   │   ├── TrialBalanceReport.tsx
+│   │   │   │   ├── AccountStatementReport.tsx
+│   │   │   │   └── FiscalReports.tsx        # G50, F6001-F6011
+│   │   │   └── utils/
+│   │   │       ├── reportGenerator.ts
+│   │   │       └── pdfExporter.ts
+│   │   │
+│   │   ├── fiscal-year/
+│   │   │   ├── components/
+│   │   │   │   ├── FiscalYearCard.tsx
+│   │   │   │   ├── PeriodLockManager.tsx
+│   │   │   │   └── YearEndClosing.tsx
+│   │   │   ├── pages/
+│   │   │   │   ├── FiscalYearList.tsx
+│   │   │   │   └── FiscalYearDetail.tsx
+│   │   │   └── store/
+│   │   │       └── fiscalYearStore.ts
+│   │   │
+│   │   ├── inventory/
+│   │   │   ├── components/
+│   │   │   │   ├── ProductForm.tsx
+│   │   │   │   ├── ProductGrid.tsx
+│   │   │   │   ├── BarcodeScanner.tsx       # Hardware integration
+│   │   │   │   └── StockMovements.tsx
+│   │   │   ├── pages/
+│   │   │   │   ├── ProductList.tsx
+│   │   │   │   ├── ProductDetail.tsx
+│   │   │   │   └── InventoryReport.tsx
+│   │   │   └── store/
+│   │   │       └── inventoryStore.ts
+│   │   │
+│   │   ├── bank-reconciliation/
+│   │   │   ├── components/
+│   │   │   │   ├── StatementImport.tsx
+│   │   │   │   ├── ReconciliationGrid.tsx
+│   │   │   │   └── MatchingEngine.tsx
+│   │   │   ├── pages/
+│   │   │   │   ├── BankAccountList.tsx
+│   │   │   │   └── ReconciliationWorkspace.tsx
+│   │   │   └── store/
+│   │   │       └── reconciliationStore.ts
+│   │   │
+│   │   ├── tax/
+│   │   │   ├── components/
+│   │   │   │   ├── IRGCalculator.tsx
+│   │   │   │   ├── VATDeclaration.tsx
+│   │   │   │   └── TaxBracketEditor.tsx
+│   │   │   ├── pages/
+│   │   │   │   ├── IRGManagement.tsx
+│   │   │   │   └── VATManagement.tsx
+│   │   │   └── utils/
+│   │   │       ├── irgCalculations.ts
+│   │   │       └── vatCalculations.ts
+│   │   │
+│   │   ├── admin/
+│   │   │   ├── components/
+│   │   │   │   ├── UserForm.tsx
+│   │   │   │   ├── RoleManager.tsx
+│   │   │   │   └── AuditLogViewer.tsx
+│   │   │   ├── pages/
+│   │   │   │   ├── UserManagement.tsx
+│   │   │   │   ├── SystemSettings.tsx
+│   │   │   │   ├── CompanyInfo.tsx
+│   │   │   │   └── LicenseInfo.tsx
+│   │   │   └── store/
+│   │   │       └── adminStore.ts
+│   │   │
+│   │   └── auth/
+│   │       ├── components/
+│   │       │   ├── LoginForm.tsx
+│   │       │   ├── ChangePasswordForm.tsx
+│   │       │   └── ProtectedRoute.tsx
+│   │       ├── pages/
+│   │       │   ├── Login.tsx
+│   │       │   └── Logout.tsx
+│   │       └── store/
+│   │           └── authStore.ts
+│   │
+│   ├── hooks/                                # Global hooks
+│   │   ├── useAuth.ts                       # Authentication hook
+│   │   ├── usePermissions.ts                # RBAC permissions
+│   │   ├── useSignalR.ts                    # SignalR connection
+│   │   ├── useKeyboard.ts                   # Global keyboard shortcuts
+│   │   ├── useDebounce.ts
+│   │   ├── useLocalStorage.ts
+│   │   ├── useAsync.ts
+│   │
+│   ├── stores/                              # Global Zustand stores
+│   │   ├── appStore.ts                      # Application state
+│   │   ├── uiStore.ts                       # UI state (sidebar, theme)
+│   │   └── cacheStore.ts                    # Client-side cache
+│   │
+│   ├── lib/                                 # Utility libraries
+│   │   ├── utils.ts                         # General utilities (cn, etc.)
+│   │   ├── constants.ts                     # App constants
+│   │   ├── validation.ts                    # Validation helpers
+│   │   ├── formatting.ts                    # Number/date formatting
+│   │   ├── accounting.ts                    # Accounting-specific utilities
+│   │   └── signalr.ts                       # SignalR configuration
+│   │
+│   ├── types/                               # TypeScript type definitions
+│   │   ├── api.types.ts                     # API response types
+│   │   ├── domain.types.ts                  # Domain entity types
+│   │   ├── ui.types.ts                      # UI component types
+│   │   └── global.d.ts                      # Global type declarations
+│   │
+│   ├── styles/                              # Global styles
+│   │   ├── globals.css                      # Tailwind + custom CSS
+│   │   ├── variables.css                    # CSS custom properties
+│   │   └── themes/
+│   │       ├── light.css
+│   │       └── dark.css
+│   │
+│   └── router/                              # Routing configuration
+│       ├── index.tsx                        # Router setup (React Router)
+│       ├── routes.tsx                       # Route definitions
+│       └── guards.tsx                       # Route guards (auth, permissions)
+│
+└── .env.example                             # Environment variables template
+
+═══════════════════════════════════════════════════════════════════════════════
+4. DOMAIN LAYER (DDD - Pure Business Logic)
+═══════════════════════════════════════════════════════════════════════════════
+
+src/TOTALFISC.Domain/
+│
+├── TOTALFISC.Domain.csproj
+│
+├── Entities/                                 # Domain Entities (Aggregate Roots)
+│   ├── Accounting/
+│   │   ├── JournalEntry.cs                  # Aggregate Root
+│   │   ├── JournalLine.cs                   # Entity
+│   │   ├── Account.cs                       # Aggregate Root
+│   │   ├── FiscalYear.cs                    # Aggregate Root
+│   │   ├── FiscalPeriod.cs                  # Entity
+│   ├── ThirdParties/
+│   │   └── ThirdParty.cs                    # Aggregate Root
+│   ├── Inventory/
+│   │   ├── Product.cs                       # Aggregate Root
+│   │   ├── InventoryMovement.cs             # Entity
+│   │   └── ProductCategory.cs               # Aggregate Root
+│   ├── Banking/
+│   │   ├── BankAccount.cs                   # Aggregate Root
+│   │   ├── BankStatement.cs                 # Aggregate Root
+│   │   ├── BankTransaction.cs               # Entity
+│   ├── Tax/
+│   │   ├── VATRate.cs                       # Aggregate Root
+│   │   ├── IRGBracket.cs                    # Entity
+│   │   └── IRGConfiguration.cs              # Aggregate Root
+│   └── Security/
+│       ├── User.cs                          # Aggregate Root
+│       └── AuditLogEntry.cs                 # Aggregate Root
+│
+├── ValueObjects/                            # Immutable Value Objects
+│   ├── Money.cs                            # Amount + Currency
+│   ├── AccountNumber.cs                    # String-based account number
+│   ├── TaxIdentifier.cs                    # NIF/NIS/RC
+│   ├── Address.cs
+│   ├── DateRange.cs
+│   └── ValidationHash.cs                   # SHA-256 hash
+│
+├── Enums/                                   # Enumerations
+│   ├── EntryStatus.cs                      # Draft, Validating, Posted, Void
+│   ├── AccountClass.cs                     # 1-7 (SCF)
+│   ├── AccountType.cs                      # Asset, Liability, etc.
+│   ├── JournalType.cs                      # Purchase, Sales, Bank, etc.
+│   ├── UserRole.cs                         # Administrator, Accountant, etc.
+│   ├── FiscalYearStatus.cs                 # Open, Locked, Closed
+│
+├── Events/                                  # Domain Events
+│   ├── JournalEntryPosted.cs
+│   ├── FiscalPeriodLocked.cs
+│   ├── FiscalYearClosed.cs
+│   ├── AccountCreated.cs
+│   └── UserLoggedIn.cs
+│
+├── Exceptions/                              # Domain Exceptions
+│   ├── DomainException.cs                  # Base exception
+│   ├── UnbalancedEntryException.cs
+│   ├── ClosedPeriodException.cs
+│   ├── InvalidAccountException.cs
+│   └── InsufficientPermissionsException.cs
+│
+├── Interfaces/                              # Repository interfaces
+│   ├── IRepository.cs                      # Generic repository
+│   ├── IJournalEntryRepository.cs
+│   ├── IAccountRepository.cs
+│   ├── IThirdPartyRepository.cs
+│   ├── IFiscalYearRepository.cs
+│   └── IUnitOfWork.cs                      # Transaction management
+│
+├── Services/                                # Domain Services
+│   ├── ILedgerSecurityService.cs           # Hash chain validation
+│   ├── IBalanceCalculator.cs               # Account balance calculation
+│   ├── IIRGCalculator.cs                   # IRG tax calculation
+│   └── IYearEndClosingService.cs           # Fiscal year closing logic
+│
+└── Specifications/                          # Domain specifications (query patterns)
+    ├── AccountSpecification.cs
+    ├── JournalEntrySpecification.cs
+    └── ThirdPartySpecification.cs
+
+═══════════════════════════════════════════════════════════════════════════════
+5. APPLICATION LAYER (CQRS + MediatR)
+═══════════════════════════════════════════════════════════════════════════════
+
+src/TOTALFISC.Application/
+│
+├── TOTALFISC.Application.csproj
+│
+├── Commands/                                # Write operations
+│   ├── JournalEntries/
+│   │   ├── CreateJournalEntry/
+│   │   │   ├── CreateJournalEntryCommand.cs
+│   │   │   ├── CreateJournalEntryCommandHandler.cs
+│   │   │   └── CreateJournalEntryCommandValidator.cs
+│   │   ├── PostJournalEntry/
+│   │   │   ├── PostJournalEntryCommand.cs
+│   │   │   └── PostJournalEntryCommandHandler.cs
+│   │   ├── VoidJournalEntry/
+│   │   │   ├── VoidJournalEntryCommand.cs
+│   │   │   └── VoidJournalEntryCommandHandler.cs
+│   │   └── UpdateJournalEntry/
+│   │       ├── UpdateJournalEntryCommand.cs
+│   │       └── UpdateJournalEntryCommandHandler.cs
+│   ├── Accounts/
+│   │   ├── CreateAccount/
+│   │   ├── UpdateAccount/
+│   │   └── DeactivateAccount/
+│   ├── ThirdParties/
+│   │   ├── CreateThirdParty/
+│   │   └── UpdateThirdParty/
+│   └── FiscalYears/
+│       ├── CreateFiscalYear/
+│       ├── LockFiscalPeriod/
+│       └── CloseFiscalYear/
+│
+├── Queries/                                 # Read operations
+│   ├── JournalEntries/
+│   │   ├── GetJournalEntryById/
+│   │   │   ├── GetJournalEntryByIdQuery.cs
+│   │   │   └── GetJournalEntryByIdQueryHandler.cs
+│   │   ├── GetJournalEntryList/
+│   │   │   ├── GetJournalEntryListQuery.cs
+│   │   │   └── GetJournalEntryListQueryHandler.cs
+│   │   └── GetGeneralLedger/
+│   │       ├── GetGeneralLedgerQuery.cs
+│   │       └── GetGeneralLedgerQueryHandler.cs
+│   ├── Accounts/
+│   │   ├── GetAccountById/
+│   │   ├── GetAccountList/
+│   │   ├── GetAccountHierarchy/
+│   │   └── GetAccountBalances/
+│   ├── Reports/
+│   │   ├── GetTrialBalance/
+│   │   ├── GetAccountStatement/
+│   │   └── GetFiscalReport/
+│   └── ThirdParties/
+│       ├── GetThirdPartyById/
+│       └── GetThirdPartyList/
+│
+├── DTOs/                                    # Data Transfer Objects
+│   ├── JournalEntryDto.cs
+│   ├── JournalLineDto.cs
+│   ├── AccountDto.cs
+│   ├── AccountBalanceDto.cs
+│   ├── ThirdPartyDto.cs
+│   └── FiscalYearDto.cs
+│
+├── Mappings/                                # AutoMapper profiles
+│   ├── JournalEntryProfile.cs
+│   ├── AccountProfile.cs
+│   ├── ThirdPartyProfile.cs
+│   ├── FiscalYearProfile.cs
+│
+├── Behaviors/                               # MediatR pipeline behaviors
+│   ├── ValidationBehavior.cs               # FluentValidation integration
+│   ├── TransactionBehavior.cs              # Auto-transaction handling
+│   ├── LoggingBehavior.cs                  # Request/response logging
+│   ├── PerformanceBehavior.cs              # Performance monitoring
+│
+├── Validators/                              # FluentValidation validators
+│   ├── CreateJournalEntryValidator.cs
+│   ├── CreateAccountValidator.cs
+│   ├── CreateThirdPartyValidator.cs
+│
+├── Services/                                # Application services
+│   ├── CurrentUserService.cs               # Current user context
+│   ├── DateTimeService.cs                  # Date/time abstraction
+│   ├── FileStorageService.cs               # File handling
+│
+├── Interfaces/                              # Application interfaces
+│   ├── ICurrentUserService.cs
+│   ├── IDateTimeService.cs
+│   ├── INotificationService.cs
+│
+└── Exceptions/                              # Application exceptions
+    ├── ValidationException.cs
+    ├── NotFoundException.cs
+    ├── ForbiddenAccessException.cs
+
+═══════════════════════════════════════════════════════════════════════════════
+6. INFRASTRUCTURE LAYER (External Services & Hardware)
+═══════════════════════════════════════════════════════════════════════════════
+
+src/TOTALFISC.Infrastructure/
+│
+├── TOTALFISC.Infrastructure.csproj
+│
+├── Services/                                # Infrastructure services
+│   ├── Security/
+│   │   ├── PasswordHasher.cs               # BCrypt implementation
+│   │   ├── JwtTokenGenerator.cs            # JWT token service
+│   │   ├── EncryptionService.cs            # SQLCipher/DPAPI
+│   │   └── LedgerSecurityService.cs        # Hash chain implementation
+│   ├── Hardware/
+│   │   ├── BarcodeService.cs               # Barcode processing
+│   │   ├── PrinterService.cs               # Printer management
+│   ├── Export/
+│   │   ├── PdfExportService.cs             # PDF generation
+│   │   ├── ExcelExportService.cs           # Excel generation (ClosedXML)
+│   │   ├── XmlExportService.cs             # XML for Jibaya'tic
+│   │   └── FecExportService.cs             # FEC file generation
+│   ├── Tax/
+│   │   ├── IRGCalculatorService.cs         # IRG calculation engine
+│   │   ├── VATCalculatorService.cs         # VAT calculation
+│   │   ├── TAPCalculatorService.cs         # TAP calculation
+│   ├── Reporting/
+│   │   ├── ReportGenerator.cs              # Report generation engine
+│   │   ├── FiscalReportMapper.cs           # GL → Fiscal report mapping
+│   │   └── XsdValidator.cs                 # XML schema validation
+│   └── Email/
+│       └── EmailService.cs                 # Email notifications (future)
+│
+├── Logging/
+│   ├── FileLogger.cs                       # File-based logging
+│   └── DatabaseLogger.cs                   # Database audit logging
+│
+└── Configuration/
+    └── InfrastructureConfiguration.cs      # DI registration
+
+═══════════════════════════════════════════════════════════════════════════════
+7. PERSISTENCE LAYER (Database Access)
+═══════════════════════════════════════════════════════════════════════════════
+
+src/TOTALFISC.Persistence/
+│
+├── TOTALFISC.Persistence.csproj
+│
+├── ApplicationDbContext.cs                 # EF Core DbContext
+│
+├── Configurations/                          # Entity configurations
+│   ├── JournalEntryConfiguration.cs        # Fluent API configuration
+│   ├── JournalLineConfiguration.cs
+│   ├── AccountConfiguration.cs
+│   ├── ThirdPartyConfiguration.cs
+│   ├── FiscalYearConfiguration.cs
+│   ├── UserConfiguration.cs
+│   ├── AuditLogConfiguration.cs
+│
+├── Repositories/                            # Repository implementations
+│   ├── GenericRepository.cs                # Base repository
+│   ├── JournalEntryRepository.cs
+│   ├── AccountRepository.cs
+│   ├── ThirdPartyRepository.cs
+│   ├── FiscalYearRepository.cs
+│   ├── UserRepository.cs
+│   ├── UnitOfWork.cs                       # Unit of Work implementation
+│
+├── Migrations/                              # EF Core migrations
+│   ├── 20260205_Initial.cs
+│   ├── 20260205_Initial.Designer.cs
+│   └── ApplicationDbContextModelSnapshot.cs
+│
+├── Seed/                                    # Database seeding
+│   ├── DatabaseSeeder.cs                   # Main seeder
+│   ├── AccountSeeder.cs                    # SCF Chart of Accounts
+│   ├── JournalCodeSeeder.cs               # ACH, VTE, BQ, etc.
+│   ├── VATRateSeeder.cs                   # VAT rates
+│   ├── IRGBracketSeeder.cs                # IRG tax brackets
+│   └── UserSeeder.cs                       # Default admin user
+│
+├── Interceptors/                            # EF Core interceptors
+│   ├── AuditInterceptor.cs                 # Auto-audit trail
+│   ├── SoftDeleteInterceptor.cs            # Soft delete handler
+│
+└── Extensions/
+    ├── ModelBuilderExtensions.cs           # Decimal → TEXT conversion
+    ├── QueryableExtensions.cs              # Custom LINQ extensions
+
+═══════════════════════════════════════════════════════════════════════════════
+8. SHARED LIBRARY (Cross-cutting Concerns)
+═══════════════════════════════════════════════════════════════════════════════
+
+src/TOTALFISC.Shared/
+│
+├── TOTALFISC.Shared.csproj
+│
+├── Constants/
+│   ├── AccountingConstants.cs              # Account classes, etc.
+│   ├── ValidationConstants.cs              # Validation rules
+│   ├── TaxConstants.cs                     # Tax rates, brackets
+│   ├── ErrorMessages.cs                    # Error message constants
+│
+├── Extensions/
+│   ├── StringExtensions.cs
+│   ├── DateTimeExtensions.cs
+│   ├── DecimalExtensions.cs                # Rounding, formatting
+│   ├── EnumExtensions.cs
+│   ├── CollectionExtensions.cs
+│
+├── Helpers/
+│   ├── HashHelper.cs                       # SHA-256 hashing
+│   ├── GuidHelper.cs                       # GUID generation
+│   ├── JsonHelper.cs                       # JSON serialization
+│   ├── ValidationHelper.cs
+│
+├── Models/
+│   ├── Result.cs                           # Result<T> pattern
+│   ├── PagedList.cs                        # Pagination
+│   ├── ErrorDetails.cs
+│   ├── OperationResult.cs
+│
+└── Utilities/
+    ├── DateTimeProvider.cs                 # Testable DateTime
+    ├── FileHelper.cs
+    ├── CultureHelper.cs                    # Localization support
+
+═══════════════════════════════════════════════════════════════════════════════
+9. TEST PROJECTS
+═══════════════════════════════════════════════════════════════════════════════
+
+tests/TOTALFISC.Domain.Tests/
+├── TOTALFISC.Domain.Tests.csproj
+├── Entities/
+│   ├── JournalEntryTests.cs               # Test aggregate root invariants
+│   ├── AccountTests.cs
+│   ├── FiscalYearTests.cs
+├── ValueObjects/
+│   ├── MoneyTests.cs                      # Test value object equality
+│   ├── AccountNumberTests.cs
+└── Services/
+    └── IRGCalculatorTests.cs              # Test tax calculations
+
+tests/TOTALFISC.Application.Tests/
+├── TOTALFISC.Application.Tests.csproj
+├── Commands/
+│   └── CreateJournalEntryCommandTests.cs
+├── Queries/
+│   └── GetGeneralLedgerQueryTests.cs
+└── Validators/
+│   └── CreateJournalEntryValidatorTests.cs
+
+tests/TOTALFISC.Api.Tests/
+├── TOTALFISC.Api.Tests.csproj
+└── Controllers/
+    ├── JournalEntriesControllerTests.cs
+    ├── AccountsControllerTests.cs
+
+tests/TOTALFISC.Integration.Tests/
+├── TOTALFISC.Integration.Tests.csproj
+├── DatabaseFixture.cs                     # Test database setup
+├── JournalEntryIntegrationTests.cs        # Full stack tests
+└── FiscalYearClosingIntegrationTests.cs
+
+tests/TOTALFISC.E2E.Tests/
+├── TOTALFISC.E2E.Tests.csproj
+├── Playwright/                            # Browser automation
+└── Scenarios/
+    ├── CreateJournalEntryScenario.cs
+    └── YearEndClosingScenario.cs
