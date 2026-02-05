@@ -1,0 +1,17 @@
+{
+  "name": "totalfisc",
+  "private": true,
+  "scripts": {
+    "dev": "./dev.sh",
+    "dev:ui": "npm --prefix src/TOTALFISC.Web run dev",
+    "dev:api": "dotnet watch run --project src/TOTALFISC.Api/TOTALFISC.Api.csproj",
+    "install:all": "npm --prefix src/TOTALFISC.Web install && dotnet restore TOTALFISC.sln",
+    "build:ui": "npm --prefix src/TOTALFISC.Web run build",
+    "build:api": "dotnet build TOTALFISC.sln",
+    "build": "npm run build:ui && npm run build:api",
+    "ui:add": "cd src/TOTALFISC.Web && npx shadcn@latest add",
+    "ui:init": "cd src/TOTALFISC.Web && npx shadcn@latest init",
+    "lint": "npm --prefix src/TOTALFISC.Web run lint",
+    "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' + && find . -name \"bin\" -type d -prune -exec rm -rf '{}' + && find . -name \"obj\" -type d -prune -exec rm -rf '{}' + && find . -name \"dist\" -type d -prune -exec rm -rf '{}' +"
+  }
+}

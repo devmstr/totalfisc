@@ -5,9 +5,9 @@
 *.userosscache
 *.sln.docstates
 .vs/
-.vs-code/
-.vscode/launch.json
-.vscode/tasks.json
+# .vs-code/
+# .vscode/launch.json
+# .vscode/tasks.json
 # Note: Keeping .vscode/extensions.json or settings.json might be useful for teams, 
 # but usually launch/tasks are user-specific or environment-dependent. 
 # However, in this project, they are specifically configured for the dev environment.
@@ -68,9 +68,13 @@ Thumbs.db
 *.tmp
 *.temp
 
-# Rider / JetBrains
+# Rider / JetBrains / Editors
 .idea/
 *.sln.iml
+*.sw?
+*.suo
+*.ntvs*
+*.njsproj
 
 # User artifacts
 brain/

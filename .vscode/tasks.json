@@ -1,0 +1,36 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-api",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/TOTALFISC.Api/TOTALFISC.Api.csproj"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "run-api",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/src/TOTALFISC.Api/TOTALFISC.Api.csproj"
+      ],
+      "isBackground": true
+    },
+    {
+      "label": "run-ui",
+      "command": "npm",
+      "type": "shell",
+      "args": ["run", "dev"],
+      "options": {
+        "cwd": "${workspaceFolder}/src/TOTALFISC.Web"
+      },
+      "isBackground": true
+    }
+  ]
+}
