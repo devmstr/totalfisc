@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useI18n } from '../lib/i18n-context'
 import { Icons } from '../components/Icons'
@@ -13,10 +14,13 @@ import {
 } from '../components/ui/select'
 import { DataTable } from '../components/shared/data-table/data-table'
 import { getColumns } from '../components/transactions/columns'
+import { JournalEntryForm } from '../components/journal/JournalEntryForm'
+import type { JournalEntry } from '../schemas/journal-entry'
 
 export const Transactions = () => {
   const { t } = useTranslation()
   const { language } = useI18n()
+  const [isFormOpen, setIsFormOpen] = useState(false)
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat(language === 'ar' ? 'ar-DZ' : 'fr-DZ', {
@@ -65,6 +69,12 @@ export const Transactions = () => {
     }
   ]
 
+  const handleSaveEntry = (entry: JournalEntry) => {
+    console.log('Saved entry:', entry)
+    // Here we would call API to save
+    // And refresher the table
+  }
+
   return (
     <div className="p-6 space-y-6 animate-in fade-in duration-500">
       {/* Header */}
@@ -77,7 +87,10 @@ export const Transactions = () => {
             {t('transactions.subtitle')}
           </p>
         </div>
-        <Button className="bg-primary text-white hover:bg-primary/90 shadow-md">
+        <Button
+          className="bg-primary text-white hover:bg-primary/90 shadow-md"
+          onClick={() => setIsFormOpen(true)}
+        >
           <Icons.Plus className="w-4 h-4 me-2" />
           {t('transactions.new_entry')}
         </Button>
@@ -211,6 +224,12 @@ export const Transactions = () => {
           searchKey="description"
         />
       </Card>
+
+      <JournalEntryForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        onSave={handleSaveEntry}
+      />
     </div>
   )
 }

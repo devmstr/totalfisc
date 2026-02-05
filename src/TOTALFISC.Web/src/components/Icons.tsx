@@ -17,7 +17,15 @@ import {
   Sun,
   Moon,
   Building,
-  ChevronsUpDown
+  BookOpen,
+  Calendar,
+  Lock,
+  Eye,
+  Edit,
+  Save,
+  Trash,
+  ArrowRight,
+  Unlock
 } from 'lucide-react'
 
 export const Icons = {
@@ -39,5 +47,13 @@ export const Icons = {
   ChevronLeft,
   Sun,
   Moon,
-  ChevronsUpDown
+  BookOpen,
+  Calendar,
+  Lock,
+  Eye,
+  Edit,
+  Save,
+  Trash,
+  Unlock,
+  ArrowRight
 }

@@ -33,7 +33,7 @@ interface HeaderProps {
 
 export const Header = ({
   onMenuClick,
-  activePage,
+  // activePage removed if not used
   isScrolled
 }: HeaderProps) => {
   const { t } = useTranslation()

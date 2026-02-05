@@ -9,6 +9,10 @@ import { Sales } from './pages/Sales'
 import { Purchases } from './pages/Purchases'
 import { Tiers } from './pages/Tiers'
 import { Reports } from './pages/Reports'
+import { Accounts } from './pages/Accounts'
+import { FiscalYears } from './pages/FiscalYears'
+import { Settings } from './pages/Settings'
+import { AuditLogs } from './pages/AuditLogs'
 import { useState, useEffect } from 'react'
 import { cn } from './lib/utils'
 import { ScrollArea } from './components/ui/scroll-area'
@@ -39,6 +43,8 @@ const AppContent = () => {
         return <Dashboard />
       case 'transactions':
         return <Transactions />
+      case 'accounts':
+        return <Accounts />
       case 'sales':
         return <Sales />
       case 'purchases':
@@ -47,6 +53,12 @@ const AppContent = () => {
         return <Tiers />
       case 'reports':
         return <Reports />
+      case 'fiscal-years':
+        return <FiscalYears />
+      case 'settings':
+        return <Settings />
+      case 'audit-logs':
+        return <AuditLogs />
       default:
         return <Dashboard />
     }
@@ -60,7 +72,7 @@ const AppContent = () => {
 
   return (
     <DirectionProvider dir={direction}>
-      <div className="flex w-full h-screen bg-background font-sans text-foreground overflow-hidden">
+      <div className="flex  h-screen bg-background font-sans text-foreground overflow-hidden">
         {/* Sidebar */}
         <Sidebar
           isOpen={isSidebarOpen}
@@ -75,7 +87,7 @@ const AppContent = () => {
         {/* Main Content Area */}
         <main
           className={cn(
-            'h-full flex-1 flex flex-col transition-all duration-300 ease-in-out relative overflow-hidden',
+            ' h-full flex-1 flex flex-col transition-all duration-300 ease-in-out relative overflow-hidden',
             isSidebarOpen ? 'lg:ms-64' : 'ms-0'
           )}
         >
@@ -85,7 +97,7 @@ const AppContent = () => {
             isScrolled={isScrolled}
           />
           <ScrollArea
-            className="flex-1 w-full h-[calc(100vh-4rem)]"
+            className="flex-1 w-full"
             viewportProps={{ onScroll: handleScroll }}
           >
             {renderPage()}

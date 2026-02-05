@@ -142,7 +142,7 @@ export const getColumns = (
         className="justify-center"
       />
     ),
-    cell: ({ row }) => (
+    cell: () => (
       <div className="flex items-center justify-center gap-2">
         <Button variant="ghost" size="sm">
           <Icons.FileText className="w-4 h-4" />
