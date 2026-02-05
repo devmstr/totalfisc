@@ -15,10 +15,13 @@ import {
   ChevronRight,
   ChevronLeft,
   Sun,
-  Moon
+  Moon,
+  Building,
+  ChevronsUpDown
 } from 'lucide-react'
 
 export const Icons = {
+  Building,
   LayoutDashboard,
   ListOrdered,
   Users,
@@ -35,5 +38,6 @@ export const Icons = {
   ChevronRight,
   ChevronLeft,
   Sun,
-  Moon
+  Moon,
+  ChevronsUpDown
 }

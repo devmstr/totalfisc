@@ -2,42 +2,66 @@ import { useTranslation } from 'react-i18next'
 import { useI18n } from '../../lib/i18n-context'
 import { useTheme } from '../../lib/theme-context'
 import { Icons } from '../Icons'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from '../ui/breadcrumb'
+
+const teams = [
+  {
+    id: 'org1',
+    name: 'TotalFisc Demo',
+    plan: 'Enterprise',
+    icon: 'Building' as const
+  },
+  {
+    id: 'org2',
+    name: 'My Company SARL',
+    plan: 'Pro',
+    icon: 'Building' as const
+  }
+]
 
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { OrgSwitcher } from './OrgSwitcher'
 
-export const Header = () => {
+import { cn } from '@/lib/utils'
+
+interface HeaderProps {
+  onMenuClick: () => void
+  activePage: string
+  isScrolled?: boolean
+}
+
+export const Header = ({
+  onMenuClick,
+  activePage,
+  isScrolled
+}: HeaderProps) => {
   const { t } = useTranslation()
   const { language, toggleLanguage } = useI18n()
   const { theme, setTheme } = useTheme()
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-      <div className="container flex h-16 items-center px-4 sm:px-8">
+    <header
+      className={cn(
+        'sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 transition-shadow duration-200',
+        isScrolled ? 'shadow-sm' : 'shadow-none'
+      )}
+    >
+      <div className="flex h-16 w-full items-center px-4">
+        {/* Toggle Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onMenuClick}
+          className="me-2"
+        >
+          <Icons.Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle Sidebar</span>
+        </Button>
+
         {/* Left: Breadcrumbs */}
         <div className="hidden md:flex me-4">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">
-                  {t('common.totalfisc', 'TotalFisc')}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="rtl:rotate-180" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{t('common.dashboard')}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <OrgSwitcher teams={teams} />
         </div>
 
         {/* Center: Org Switcher removed */}

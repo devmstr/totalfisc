@@ -1,6 +1,6 @@
-# Algerian SME Platform UI Tables Agent
+# TOTALFISC UI Tables Agent
 
-You are an implementation agent specialized in building **consistent, accessible, bidirectional (RTL/LTR), multilingual, type-safe data tables** for the **Algerian SME Platform** React 18 frontend (hosted in WebView2) using **TanStack Table v8**, **shadcn/ui**, and **Zod**.
+You are an implementation agent specialized in building **consistent, accessible, bidirectional (RTL/LTR), multilingual, type-safe data tables** for the **TOTALFISC** React 19 frontend using **TanStack Table v8**, **shadcn/ui**, and **Zod**.
 
 Your output must be production-ready and strictly follow the standards below.
 
@@ -9,11 +9,11 @@ Your output must be production-ready and strictly follow the standards below.
 ## Mission
 
 - Produce **maintainable, composable** table code (no god components)
-- Enforce **React state as the source of truth** for table view state (no URL routing in WebView2)
-- Keep **data fetching via Bridge Commands** to C# backend (MediatR handlers)
-- Ensure **strict type safety** between C# DTOs → Bridge → React → cell renderers
+- Enforce **React state as the source of truth** for table view state
+- Keep **data fetching via local services or Bridge Commands**
+- Ensure **strict type safety** across the data flow
 - Support **bidirectional text (RTL for Arabic, LTR for French)**
-- Support **full i18n** with French as primary and Arabic as secondary language
+- Support **full i18n** with French and Arabic support
 
 ---
 
@@ -170,17 +170,20 @@ Use `react-i18next` with namespaced translations per module.
 
 ```tsx
 // Frontend/apps/shell/src/App.tsx
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next'
 
 export function App() {
-  const { i18n } = useTranslation();
-  const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+  const { i18n } = useTranslation()
+  const dir = i18n.language === 'ar' ? 'rtl' : 'ltr'
 
   return (
-    <div dir={dir} className={cn("min-h-screen", dir === "rtl" && "font-arabic")}>
+    <div
+      dir={dir}
+      className={cn('min-h-screen', dir === 'rtl' && 'font-arabic')}
+    >
       {/* App content */}
     </div>
-  );
+  )
 }
 ```
 
@@ -202,24 +205,22 @@ Use logical properties for spacing and positioning:
 // columns.tsx
 export const columns: ColumnDef<CaseRow>[] = [
   {
-    accessorKey: "caseNumber",
+    accessorKey: 'caseNumber',
     header: ({ column }) => {
-      const { t } = useTranslation('legal');
+      const { t } = useTranslation('legal')
       return (
-        <div className="text-start">
-          {t('casesTable.columns.caseNumber')}
-        </div>
-      );
+        <div className="text-start">{t('casesTable.columns.caseNumber')}</div>
+      )
     },
     cell: ({ row }) => {
       return (
         <div className="text-start font-medium">
-          {row.getValue("caseNumber")}
+          {row.getValue('caseNumber')}
         </div>
-      );
+      )
     }
   }
-];
+]
 ```
 
 #### Icon Direction
@@ -227,18 +228,22 @@ export const columns: ColumnDef<CaseRow>[] = [
 Some icons need flipping in RTL:
 
 ```tsx
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 function PaginationButton() {
-  const { i18n } = useTranslation();
-  const isRTL = i18n.language === 'ar';
+  const { i18n } = useTranslation()
+  const isRTL = i18n.language === 'ar'
 
   return (
     <Button>
-      {isRTL ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+      {isRTL ? (
+        <ChevronRight className="h-4 w-4" />
+      ) : (
+        <ChevronLeft className="h-4 w-4" />
+      )}
     </Button>
-  );
+  )
 }
 ```
 
@@ -256,13 +261,13 @@ export interface BridgeClient {
   dispatch<TResponse, TPayload>(
     command: string,
     payload: TPayload
-  ): Promise<Result<TResponse>>;
+  ): Promise<Result<TResponse>>
 }
 
 export interface Result<T> {
-  isSuccess: boolean;
-  value?: T;
-  error?: string;
+  isSuccess: boolean
+  value?: T
+  error?: string
 }
 ```
 
@@ -272,28 +277,30 @@ Define commands that map to C# MediatR handlers.
 
 ```typescript
 // Frontend/packages/module-legal/src/api/queries.ts
-import { bridge } from '@asp/bridge-client';
+import { bridge } from '@asp/bridge-client'
 
 export interface GetCasesQuery {
-  page: number;
-  limit: number;
-  search?: string;
-  status?: string[];
-  sortBy?: string;
-  sortDirection?: 'asc' | 'desc';
+  page: number
+  limit: number
+  search?: string
+  status?: string[]
+  sortBy?: string
+  sortDirection?: 'asc' | 'desc'
 }
 
 export interface GetCasesResponse {
-  cases: CaseDto[];
-  totalCount: number;
-  pageCount: number;
+  cases: CaseDto[]
+  totalCount: number
+  pageCount: number
 }
 
-export async function getCases(query: GetCasesQuery): Promise<Result<GetCasesResponse>> {
+export async function getCases(
+  query: GetCasesQuery
+): Promise<Result<GetCasesResponse>> {
   return bridge.dispatch<GetCasesResponse, GetCasesQuery>(
     'Legal.GetCasesQuery',
     query
-  );
+  )
 }
 ```
 
@@ -318,31 +325,31 @@ Create a custom hook per table for data fetching.
 
 ```typescript
 // Frontend/packages/module-legal/src/components/cases-table/use-cases-table-data.ts
-import { useState, useEffect } from 'react';
-import { getCases, GetCasesQuery, GetCasesResponse } from '../../api/queries';
+import { useState, useEffect } from 'react'
+import { getCases, GetCasesQuery, GetCasesResponse } from '../../api/queries'
 
 export function useCasesTableData(query: GetCasesQuery) {
-  const [data, setData] = useState<GetCasesResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<GetCasesResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
+      setIsLoading(true)
+      setError(null)
 
-      const result = await getCases(query);
+      const result = await getCases(query)
 
       if (result.isSuccess && result.value) {
-        setData(result.value);
+        setData(result.value)
       } else {
-        setError(result.error || 'Failed to load cases');
+        setError(result.error || 'Failed to load cases')
       }
 
-      setIsLoading(false);
-    };
+      setIsLoading(false)
+    }
 
-    fetchData();
+    fetchData()
   }, [
     query.page,
     query.limit,
@@ -350,9 +357,9 @@ export function useCasesTableData(query: GetCasesQuery) {
     query.status?.join(','),
     query.sortBy,
     query.sortDirection
-  ]);
+  ])
 
-  return { data, isLoading, error };
+  return { data, isLoading, error }
 }
 ```
 
@@ -366,15 +373,15 @@ Since WebView2 doesn't have URL routing, use React state + optional localStorage
 
 ```typescript
 // Frontend/packages/module-legal/src/components/cases-table/use-cases-table-state.ts
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react'
 
 export interface CasesTableState {
-  page: number;
-  limit: number;
-  search: string;
-  status: string[];
-  sortBy: string;
-  sortDirection: 'asc' | 'desc';
+  page: number
+  limit: number
+  search: string
+  status: string[]
+  sortBy: string
+  sortDirection: 'asc' | 'desc'
 }
 
 const DEFAULT_STATE: CasesTableState = {
@@ -384,30 +391,30 @@ const DEFAULT_STATE: CasesTableState = {
   status: [],
   sortBy: 'createdAt',
   sortDirection: 'desc'
-};
+}
 
 export function useCasesTableState() {
   const [state, setState] = useState<CasesTableState>(() => {
     // Optional: Load from localStorage
-    const saved = localStorage.getItem('casesTableState');
-    return saved ? JSON.parse(saved) : DEFAULT_STATE;
-  });
+    const saved = localStorage.getItem('casesTableState')
+    return saved ? JSON.parse(saved) : DEFAULT_STATE
+  })
 
   const updateState = useCallback((updates: Partial<CasesTableState>) => {
-    setState(prev => {
-      const newState = { ...prev, ...updates };
+    setState((prev) => {
+      const newState = { ...prev, ...updates }
       // Optional: Persist to localStorage
-      localStorage.setItem('casesTableState', JSON.stringify(newState));
-      return newState;
-    });
-  }, []);
+      localStorage.setItem('casesTableState', JSON.stringify(newState))
+      return newState
+    })
+  }, [])
 
   const resetState = useCallback(() => {
-    setState(DEFAULT_STATE);
-    localStorage.removeItem('casesTableState');
-  }, []);
+    setState(DEFAULT_STATE)
+    localStorage.removeItem('casesTableState')
+  }, [])
 
-  return { state, updateState, resetState };
+  return { state, updateState, resetState }
 }
 ```
 
@@ -417,8 +424,8 @@ export function useCasesTableState() {
 
 ```typescript
 const handleSearchChange = (search: string) => {
-  updateState({ search, page: 1 });
-};
+  updateState({ search, page: 1 })
+}
 ```
 
 ---
@@ -781,7 +788,7 @@ export const CaseRowSchema = z.object({
   caseNumber: z.string(),
   clientName: z.string(),
   status: z.enum(['Open', 'InProgress', 'Closed']),
-  createdAt: z.string(), // ISO date string
+  createdAt: z.string() // ISO date string
 })
 
 export type CaseRow = z.infer<typeof CaseRowSchema>
@@ -789,7 +796,7 @@ export type CaseRow = z.infer<typeof CaseRowSchema>
 export const CasesResponseSchema = z.object({
   cases: z.array(CaseRowSchema),
   totalCount: z.number(),
-  pageCount: z.number(),
+  pageCount: z.number()
 })
 
 export type CasesResponse = z.infer<typeof CasesResponseSchema>

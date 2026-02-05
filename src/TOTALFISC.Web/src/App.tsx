@@ -4,23 +4,92 @@ import { I18nProvider, useI18n } from './lib/i18n-context'
 import { Sidebar } from './components/layout/Sidebar'
 import { Header } from './components/layout/Header'
 import { Dashboard } from './pages/Dashboard'
+import { Transactions } from './pages/Transactions'
+import { Sales } from './pages/Sales'
+import { Purchases } from './pages/Purchases'
+import { Tiers } from './pages/Tiers'
+import { Reports } from './pages/Reports'
+import { useState, useEffect } from 'react'
+import { cn } from './lib/utils'
+import { ScrollArea } from './components/ui/scroll-area'
 
 const AppContent = () => {
   const { direction } = useI18n()
+  const [activePage, setActivePage] = useState('dashboard')
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024)
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
+
+  // Auto-close sidebar on small screens
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsSidebarOpen(false)
+      } else {
+        setIsSidebarOpen(true)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const renderPage = () => {
+    switch (activePage) {
+      case 'dashboard':
+        return <Dashboard />
+      case 'transactions':
+        return <Transactions />
+      case 'sales':
+        return <Sales />
+      case 'purchases':
+        return <Purchases />
+      case 'tiers':
+        return <Tiers />
+      case 'reports':
+        return <Reports />
+      default:
+        return <Dashboard />
+    }
+  }
+
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    setIsScrolled(e.currentTarget.scrollTop > 0)
+  }
 
   return (
     <DirectionProvider dir={direction}>
-      <div className="flex min-h-screen bg-background font-sans text-foreground">
+      <div className="flex w-full h-screen bg-background font-sans text-foreground overflow-hidden">
         {/* Sidebar */}
-        <Sidebar />
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          activePage={activePage}
+          onNavigate={(page) => {
+            setActivePage(page)
+            if (window.innerWidth < 1024) setIsSidebarOpen(false)
+          }}
+        />
 
         {/* Main Content Area */}
-        {/* ms-64 creates the margin-start (left in LTR, right in RTL) to accommodate the fixed sidebar */}
-        <main className="flex-1 flex flex-col ms-64 transition-all duration-300 ease-in-out relative">
-          <Header />
-          <div className="flex-1 w-full p-0">
-            <Dashboard />
-          </div>
+        <main
+          className={cn(
+            'h-full flex-1 flex flex-col transition-all duration-300 ease-in-out relative overflow-hidden',
+            isSidebarOpen ? 'lg:ms-64' : 'ms-0'
+          )}
+        >
+          <Header
+            onMenuClick={toggleSidebar}
+            activePage={activePage}
+            isScrolled={isScrolled}
+          />
+          <ScrollArea
+            className="flex-1 w-full h-[calc(100vh-4rem)]"
+            viewportProps={{ onScroll: handleScroll }}
+          >
+            {renderPage()}
+          </ScrollArea>
         </main>
       </div>
     </DirectionProvider>
