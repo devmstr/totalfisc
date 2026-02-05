@@ -120,9 +120,9 @@ Business strategy and practical code examples:
 │  │   Desktop    │    WebView2                               │
 │  │     WPF      │◄─────────────────┐                        │
 │  └──────────────┘                  │                        │
-│                                     ▼                       │
+│                                    ▼                        │
 │                            ┌─────────────────┐              │
-│                            │  React Frontend  │             │
+│                            │  React Frontend │              │
 │                            │  (TypeScript)   │              │
 │                            └─────────────────┘              │
 │                                     │                       │
