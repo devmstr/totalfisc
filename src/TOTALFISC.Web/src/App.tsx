@@ -1,34 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { DirectionProvider } from '@radix-ui/react-direction'
+import { ThemeProvider } from './lib/theme-provider'
+import { I18nProvider, useI18n } from './lib/i18n-context'
+import { Sidebar } from './components/layout/Sidebar'
+import { Header } from './components/layout/Header'
+import { Dashboard } from './pages/Dashboard'
 
-function App() {
-  const [count, setCount] = useState(0)
+const AppContent = () => {
+  const { direction } = useI18n()
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <DirectionProvider dir={direction}>
+      <div className="flex min-h-screen bg-background font-sans text-foreground">
+        {/* Sidebar */}
+        <Sidebar />
+
+        {/* Main Content Area */}
+        {/* ms-64 creates the margin-start (left in LTR, right in RTL) to accommodate the fixed sidebar */}
+        <main className="flex-1 flex flex-col ms-64 transition-all duration-300 ease-in-out relative">
+          <Header />
+          <div className="flex-1 w-full p-0">
+            <Dashboard />
+          </div>
+        </main>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </DirectionProvider>
+  )
+}
+
+function App() {
+  return (
+    <ThemeProvider defaultTheme="system" storageKey="totalfisc-ui-theme">
+      <I18nProvider>
+        <AppContent />
+      </I18nProvider>
+    </ThemeProvider>
   )
 }
 

@@ -1,5 +1,124 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@font-face {
+  font-family: 'Somar';
+  src: url('/fonts/somar/fonnts.com-Somar_Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Somar';
+  src: url('/fonts/somar/fonnts.com-Somar_Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Somar';
+  src: url('/fonts/somar/fonnts.com-Somar_Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Somar';
+  src: url('/fonts/somar/fonnts.com-Somar_Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Somar';
+  src: url('/fonts/somar/fonnts.com-Somar_Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Somar';
+  src: url('/fonts/somar/fonnts.com-Somar_Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins/Poppins-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -10,7 +129,7 @@
   --card-foreground: oklch(0.1567 0.0267 194.7689);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.1567 0.0267 194.7689);
-  --primary: oklch(0.3359 0.0575 193.0136);
+  --primary: #003d3d;
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.9499 0.02 193.0003);
   --secondary-foreground: oklch(0.3359 0.0575 193.0136);
@@ -28,22 +147,18 @@
   --chart-3: oklch(0.4498 0.1005 240.3577);
   --chart-4: oklch(0.653 0.1347 81.5805);
   --chart-5: oklch(0.5 0.1201 299.669);
-  --sidebar: oklch(0.9843 0.0053 197.0705);
-  --sidebar-foreground: oklch(0.2515 0.0405 192.218);
+  --sidebar: #003d3d;
+  --sidebar-foreground: oklch(0.9843 0.0053 197.0705);
   --sidebar-primary: oklch(0.3359 0.0575 193.0136);
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.9499 0.02 193.0003);
   --sidebar-accent-foreground: oklch(0.2515 0.0405 192.218);
   --sidebar-border: oklch(0.8994 0.0192 196.8162);
   --sidebar-ring: oklch(0.3359 0.0575 193.0136);
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+
+  --font-poppins: 'Poppins', sans-serif;
+  --font-somar: 'Somar Sans', 'Cairo', sans-serif;
+
   --radius: 0.325rem;
   --shadow-x: 0;
   --shadow-y: 1px;
@@ -65,6 +180,10 @@
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
   --tracking-normal: 0.025em;
   --spacing: 0.25rem;
+}
+
+:root[dir='rtl'] {
+  --font-sans: var(--font-somar);
 }
 
 .dark {
@@ -108,6 +227,9 @@
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
     'Courier New', monospace;
+
+  --font-poppins: 'Poppins', sans-serif;
+  --font-somar: 'Somar Sans', 'Cairo', sans-serif;
   --radius: 0.325rem;
   --shadow-x: 0;
   --shadow-y: 1px;
@@ -167,6 +289,9 @@
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
 
+  --font-poppins: var(--font-poppins);
+  --font-somar: var(--font-somar);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -191,45 +316,4 @@
 
 body {
   letter-spacing: var(--tracking-normal);
-}
-
-@theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
 }

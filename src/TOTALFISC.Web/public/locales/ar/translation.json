@@ -1,0 +1,38 @@
+{
+  "common": {
+    "dashboard": "لوحة القيادة",
+    "transactions": "المعاملات",
+    "sales": "المبيعات",
+    "purchases": "المشتريات",
+    "tiers": "الأطراف الثالثة",
+    "reports": "التقارير",
+    "settings": "الإعدادات",
+    "search": "بحث...",
+    "welcome": "مرحبًا، {{name}} !",
+    "welcome_subtitle": "إليك ما يحدث في عملك اليوم.",
+    "new_quote": "عرض سعر جديد",
+    "sale_invoice": "فاتورة بيع",
+    "purchase_invoice": "فاتورة شراء",
+    "org_selector": "حدد المؤسسة"
+  },
+  "dashboard": {
+    "cash_flow": "رصيد الحسابات",
+    "receivables": "مستحقات العملاء",
+    "payables": "ديون الموردين",
+    "from_last_month": "من الشهر الماضي",
+    "open_invoices": "فواتير مفتوحة",
+    "due_invoices": "فواتير مستحقة",
+    "actions_required": "إجراءات مطلوبة",
+    "unjustified": "غير مبررة",
+    "overdue_invoices": "فواتير متأخرة",
+    "overdue_purchases": "مشتريات متأخرة",
+    "justify": "تبرير",
+    "remind": "تذكير",
+    "no_delay": "لا يوجد تأخير",
+    "recent_activity": "النشاط الأخير",
+    "col_type": "النوع",
+    "col_desc": "الوصف",
+    "col_date": "التاريخ",
+    "col_amount": "المبلغ"
+  }
+}

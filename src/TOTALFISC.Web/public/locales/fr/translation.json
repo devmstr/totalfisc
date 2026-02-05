@@ -1,0 +1,38 @@
+{
+  "common": {
+    "dashboard": "Tableau de bord",
+    "transactions": "Transactions",
+    "sales": "Ventes",
+    "purchases": "Achats",
+    "tiers": "Tiers",
+    "reports": "Rapports",
+    "settings": "Paramètres",
+    "search": "Recherche...",
+    "welcome": "Bienvenue, {{name}} !",
+    "welcome_subtitle": "Voici ce qui se passe dans votre entreprise aujourd'hui.",
+    "new_quote": "Nouveau Devis",
+    "sale_invoice": "Facture Vente",
+    "purchase_invoice": "Facture Achat",
+    "org_selector": "Sélectionner une organisation"
+  },
+  "dashboard": {
+    "cash_flow": "Solde des comptes",
+    "receivables": "Total Facturé (Encours)",
+    "payables": "À payer",
+    "from_last_month": "par rapport au mois dernier",
+    "open_invoices": "factures ouvertes",
+    "due_invoices": "factures à échoire",
+    "actions_required": "Actions à faire",
+    "unjustified": "Non justifiées",
+    "overdue_invoices": "Factures en retard",
+    "overdue_purchases": "Factures d'achat en retard",
+    "justify": "Justifier",
+    "remind": "Relancer",
+    "no_delay": "Aucun retard",
+    "recent_activity": "Activités récentes",
+    "col_type": "Type",
+    "col_desc": "Description",
+    "col_date": "Date",
+    "col_amount": "Montant"
+  }
+}
