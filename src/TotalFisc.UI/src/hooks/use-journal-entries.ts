@@ -23,12 +23,12 @@ export interface JournalEntryDto {
   createdAt: string
 }
 
-export const useJournalEntries = (fiscalYearId: string) => {
+export const useJournalEntries = (fiscalYearId: string, limit?: number) => {
   return useQuery<JournalEntryDto[]>({
-    queryKey: ['journal-entries', fiscalYearId],
+    queryKey: ['journal-entries', fiscalYearId, limit],
     queryFn: async () => {
       const response = await apiClient.get('/journalentries', {
-        params: { fiscalYearId }
+        params: { fiscalYearId, limit }
       })
       return response.data
     },

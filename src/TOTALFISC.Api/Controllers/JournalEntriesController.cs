@@ -17,14 +17,14 @@ public class JournalEntriesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetList([FromQuery] string fiscalYearId)
+    public async Task<IActionResult> GetList([FromQuery] string fiscalYearId, [FromQuery] int? limit = null)
     {
         if (string.IsNullOrEmpty(fiscalYearId))
         {
             return BadRequest("fiscalYearId is required");
         }
 
-        var result = await _mediator.Send(new GetJournalEntryListQuery(fiscalYearId));
+        var result = await _mediator.Send(new GetJournalEntryListQuery(fiscalYearId, limit));
         return Ok(result);
     }
 

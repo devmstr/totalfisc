@@ -51,13 +51,24 @@ public class JournalEntryRepository : RepositoryBase<JournalEntry>, IJournalEntr
         return maxNumber + 1;
     }
 
-    public async Task<IEnumerable<JournalEntry>> GetByFiscalYearAsync(Guid fiscalYearId)
+    public async Task<IEnumerable<JournalEntry>> GetByFiscalYearAsync(Guid fiscalYearId, int? limit = null)
     {
-        return await _context.JournalEntries
+        var query = _context.JournalEntries
             .Where(e => e.FiscalYearId == fiscalYearId)
-            .Include(e => e.Lines)
+            .Include(e => e.Lines);
+
+        if (limit.HasValue)
+        {
+            return await query
+                .OrderByDescending(e => e.EntryDate)
+                .ThenByDescending(e => (int)e.EntryNumber)
+                .Take(limit.Value)
+                .ToListAsync();
+        }
+
+        return await query
             .OrderBy(e => e.EntryDate)
-            .ThenBy(e => e.EntryNumber)
+            .ThenBy(e => (int)e.EntryNumber)
             .ToListAsync();
     }
 }

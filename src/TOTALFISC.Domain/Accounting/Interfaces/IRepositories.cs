@@ -9,7 +9,7 @@ namespace TOTALFISC.Domain.Accounting.Interfaces;
 public interface IJournalEntryRepository : IRepository<JournalEntry>
 {
     Task<int> GetNextEntryNumberAsync(Guid fiscalYearId, string journalCode);
-    Task<IEnumerable<JournalEntry>> GetByFiscalYearAsync(Guid fiscalYearId);
+    Task<IEnumerable<JournalEntry>> GetByFiscalYearAsync(Guid fiscalYearId, int? limit = null);
 }
 
 public interface IAccountRepository : IRepository<Account>

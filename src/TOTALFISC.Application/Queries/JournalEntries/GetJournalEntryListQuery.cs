@@ -4,7 +4,7 @@ using TOTALFISC.Domain.Accounting.Interfaces;
 
 namespace TOTALFISC.Application.Queries.JournalEntries;
 
-public record GetJournalEntryListQuery(string FiscalYearId) : IRequest<List<JournalEntryDto>>;
+public record GetJournalEntryListQuery(string FiscalYearId, int? Limit = null) : IRequest<List<JournalEntryDto>>;
 
 public class GetJournalEntryListQueryHandler : IRequestHandler<GetJournalEntryListQuery, List<JournalEntryDto>>
 {
@@ -17,7 +17,7 @@ public class GetJournalEntryListQueryHandler : IRequestHandler<GetJournalEntryLi
 
     public async Task<List<JournalEntryDto>> Handle(GetJournalEntryListQuery request, CancellationToken cancellationToken)
     {
-        var entries = await _repository.GetByFiscalYearAsync(Guid.Parse(request.FiscalYearId));
+        var entries = await _repository.GetByFiscalYearAsync(Guid.Parse(request.FiscalYearId), request.Limit);
 
         return entries.Select(e => new JournalEntryDto
         {

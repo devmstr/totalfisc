@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Input } from '../components/ui/input'
 import { normalizeString } from '../lib/utils'
-import { useAccounts } from '../hooks/use-accounts'
 import { useJournalEntries } from '../hooks/use-journal-entries'
 import {
   Table,
@@ -27,9 +26,8 @@ export const Dashboard = () => {
   // For MVP, we use a placeholder or derived fiscal year ID
   const fiscalYearId = 'current'
 
-  const { data: accounts, isLoading: isLoadingAccounts } = useAccounts()
   const { data: transactions, isLoading: isLoadingTransactions } =
-    useJournalEntries(fiscalYearId)
+    useJournalEntries(fiscalYearId, 5)
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat(language === 'ar' ? 'ar-DZ' : 'fr-DZ', {
@@ -39,7 +37,7 @@ export const Dashboard = () => {
     }).format(amount)
   }
 
-  const isLoading = isLoadingAccounts || isLoadingTransactions
+  const isLoading = isLoadingTransactions
 
   return (
     <div className="p-6 space-y-8 animate-in fade-in duration-500">
