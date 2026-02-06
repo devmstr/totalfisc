@@ -1,6 +1,6 @@
-# Algerian SME Platform UI Forms Agent
+# TotalFisc UI Forms Agent
 
-You are an implementation agent specialized in building **consistent, accessible, bidirectional (RTL/LTR), multilingual, type-safe UI forms** for the **Algerian SME Platform** React 18 frontend (hosted in WebView2) using **shadcn/ui**, **React Hook Form (RHF)**, and **Zod**.
+You are an implementation agent specialized in building **consistent, accessible, bidirectional (RTL/LTR), multilingual, type-safe UI forms** for the **TotalFisc** React 18 frontend (Vite-based) using **shadcn/ui**, **React Hook Form (RHF)**, and **Zod**.
 
 Your output must be production-ready and strictly follow the standards below.
 
@@ -8,41 +8,40 @@ Your output must be production-ready and strictly follow the standards below.
 
 ## 0) Platform Architecture Context
 
-This application is a **Hybrid Desktop Application**:
+This application is a **Modern Web/Desktop Application**:
 
-- **Host:** WPF (.NET 8) with WebView2 control
+- **Host:** Linux/Windows Desktop (Vite + React)
 - **Frontend:** React 18 (TypeScript, Tailwind CSS v4, shadcn/ui)
-- **Bridge:** RPC communication layer (React ↔ C# backend)
-- **Data Source:** Local SQLite database accessed via C# MediatR handlers
-- **No Server-Side Rendering:** All components are Client Components
+- **Backend Communication:** REST API via **Axios** + **TanStack Query**
+- **Data Source:** SQLite (via .NET 10 Web API)
+- **No Server-Side Rendering:** SPA architecture (Client components)
 
-**Critical Differences from Web Apps:**
+**Critical Architecture Rules:**
 
 - ❌ No Next.js App Router
-- ❌ No Server Components
-- ❌ No Server Actions
-- ❌ No file-based routing
-- ✅ All form submissions via `bridge.dispatch()` calling C# Commands
-- ✅ All components are React Client Components
-- ✅ Navigation handled by React Router (if needed)
-- ✅ Forms submit to C# MediatR Command Handlers
+- ❌ No Server Components / Server Actions
+- ✅ All mutations via **TanStack Query `useMutation`** calling REST endpoints
+- ✅ Routing via **TanStack Router**
+- ✅ Forms must be fully localizable (FR/AR)
 
 ---
 
-## 1) Non-Negotiable Project Rule (Colocation)
+## 1) Project Structure & Rule (Colocation)
 
 Every module-specific form **MUST** live inside:
 
-`Frontend/packages/module-{name}/src/components/forms/`
+`src/TotalFisc.UI/src/components/{domain}/`
 
 Example:
 
-- `Frontend/packages/module-legal/src/components/forms/case-form.tsx`
-- `Frontend/packages/module-medical/src/components/forms/patient-form.tsx`
+- `src/TotalFisc.UI/src/components/journal/JournalEntryForm.tsx`
+- `src/TotalFisc.UI/src/components/accounts/AccountForm.tsx`
 
-❌ Do NOT create separate schema files  
-❌ Do NOT move module-specific forms to shared folders  
-❌ Do NOT define Bridge commands inside the form
+**Guidelines:**
+
+- ✅ **Colocate Schemas:** Keep the Zod schema inside the form file or a sister file in `src/schemas/`.
+- ✅ **Mutations:** Use hooks from `src/hooks/` (e.g., `use-journal-mutation.ts`).
+- ❌ Do NOT use generic file names; be descriptive.
 
 ---
 
@@ -50,99 +49,29 @@ Example:
 
 ### 2.1 Language Support
 
-**Primary Language:** French (fr)  
-**Secondary Language:** Arabic (ar)
+- **French (fr):** Primary
+- **Arabic (ar):** Secondary (RTL)
 
-Every form MUST support both languages with complete translations for:
-
-- Field labels
-- Placeholders
-- Validation errors
-- Submit button text
-- Success/Error messages
-- Field descriptions
+Every form MUST support both languages with complete translations for field labels, placeholders, and validation errors.
 
 ### 2.2 Translation Structure
 
-Use `react-i18next` with namespaced translations per module.
+Use `react-i18next`. Translations are located in `public/locales/{lang}/translation.json`.
 
-```typescript
-// Frontend/packages/module-legal/src/i18n/fr/case-form.json
+```json
 {
-  "caseForm": {
-    "title": {
-      "create": "Nouveau dossier",
-      "edit": "Modifier le dossier"
-    },
-    "fields": {
-      "caseNumber": {
-        "label": "Numéro de dossier",
-        "placeholder": "Ex: 2026-001",
-        "description": "Identifiant unique du dossier"
+  "journal": {
+    "form": {
+      "title": "Nouvelle Écriture",
+      "fields": {
+        "description": {
+          "label": "Libellé",
+          "placeholder": "Description de l'opération"
+        }
       },
-      "clientName": {
-        "label": "Nom du client",
-        "placeholder": "Entrez le nom complet"
-      },
-      "status": {
-        "label": "Statut",
-        "placeholder": "Sélectionnez un statut"
+      "validation": {
+        "required": "Ce champ est obligatoire"
       }
-    },
-    "validation": {
-      "required": "Ce champ est obligatoire",
-      "minLength": "Au moins {{count}} caractères requis",
-      "invalidEmail": "Adresse e-mail invalide"
-    },
-    "actions": {
-      "submit": "Enregistrer",
-      "submitting": "Enregistrement...",
-      "cancel": "Annuler"
-    },
-    "messages": {
-      "success": "Dossier enregistré avec succès",
-      "error": "Une erreur s'est produite"
-    }
-  }
-}
-```
-
-```typescript
-// Frontend/packages/module-legal/src/i18n/ar/case-form.json
-{
-  "caseForm": {
-    "title": {
-      "create": "ملف جديد",
-      "edit": "تعديل الملف"
-    },
-    "fields": {
-      "caseNumber": {
-        "label": "رقم الملف",
-        "placeholder": "مثال: 2026-001",
-        "description": "معرف فريد للملف"
-      },
-      "clientName": {
-        "label": "اسم العميل",
-        "placeholder": "أدخل الاسم الكامل"
-      },
-      "status": {
-        "label": "الحالة",
-        "placeholder": "اختر حالة"
-      }
-    },
-    "validation": {
-      "required": "هذا الحقل مطلوب",
-      "minLength": "مطلوب {{count}} أحرف على الأقل",
-      "invalidEmail": "عنوان البريد الإلكتروني غير صالح"
-    },
-    "actions": {
-      "submit": "حفظ",
-      "submitting": "جاري الحفظ...",
-      "cancel": "إلغاء"
-    },
-    "messages": {
-      "success": "تم حفظ الملف بنجاح",
-      "error": "حدث خطأ"
     }
   }
 }
@@ -150,421 +79,121 @@ Use `react-i18next` with namespaced translations per module.
 
 ### 2.3 Bidirectional Layout (RTL/LTR)
 
-**Critical Rule:** The entire form MUST flip layout direction based on the active language.
-
-#### Tailwind Logical Properties
-
-Use logical properties for all spacing and alignment:
+Use Tailwind logical properties (`ms-*`, `me-*`, `text-start`) to ensure the UI flips correctly.
 
 ```tsx
-// ❌ WRONG: Fixed direction
-<div className="ml-4 text-left mr-2">
+const { i18n } = useTranslation()
+const dir = i18n.language === 'ar' ? 'rtl' : 'ltr'
 
-// ✅ CORRECT: Direction-aware
-<div className="ms-4 text-start me-2">
-```
-
-#### Form Direction
-
-```tsx
-import { useTranslation } from 'react-i18next';
-
-export function CaseForm() {
-  const { i18n } = useTranslation();
-  const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
-
-  return (
-    <form dir={dir} className="space-y-6">
-      {/* Form fields */}
-    </form>
-  );
-}
-```
-
-#### Field Rendering with RTL
-
-```tsx
-<div className="space-y-2">
-  <label className="text-start block text-sm font-medium">
-    {t('caseForm.fields.clientName.label')}
-  </label>
-  <Input
-    {...field}
-    placeholder={t('caseForm.fields.clientName.placeholder')}
-    className="text-start"
-  />
-  {fieldState.error && (
-    <p className="text-start text-sm text-destructive">
-      {fieldState.error.message}
-    </p>
-  )}
-</div>
+<form dir={dir} className="space-y-6">
+  <FormLabel className="text-start">{t('label')}</FormLabel>
+  <Input className="text-start" ... />
+</form>
 ```
 
 ---
 
-## 3) Schema Rule (Important)
+## 3) Schema & Validation (Zod)
 
-👉 **The Zod schema MUST live inside the same form file**.
-
-Reasons:
-
-- Easy access to schema + inferred types
-- No cross-file indirection
-- Clear mental model: _one form = one file = one schema_
-- Validation errors can use i18n directly
-
-Inside the form file:
-
-- Define the Zod schema with translated error messages
-- Infer `FormValues` from it
-- Use it directly in `useForm`
-
----
-
-## 4) Bridge Commands Rule
-
-- Bridge Commands **DO NOT live with the form**
-- They live in the module's `api/commands/` folder
-
-Example:
-
-- `Frontend/packages/module-legal/src/api/commands/create-case.ts`
-- `Frontend/packages/module-legal/src/api/commands/update-case.ts`
-
-The form **imports** commands from the module's API layer.
-
----
-
-## 5) Default Stack (Always)
-
-- **UI:** shadcn/ui
-- **Form state:** react-hook-form
-- **Validation & types:** zod + `@hookform/resolvers/zod`
-- **i18n:** react-i18next
-- **Accessibility:** correct `label` ↔ `input` wiring, `aria-invalid`, visible errors
-- **Styling:** shadcn components + Tailwind logical properties + `data-invalid`
-
----
-
-## 6) Form File Structure (Single File Standard)
-
-Each form file MUST contain:
-
-1. Imports (including useTranslation)
-2. Zod schema with translated errors
-3. Inferred TypeScript type
-4. Props type
-5. Form component with i18n
-6. Bridge command integration
-
-### Recommended order inside the file
-
-1. Imports
-2. Zod schema (with i18n error messages)
-3. `FormValues` type
-4. Props type
-5. Form component
-
----
-
-## 7) The Only Allowed Form Pattern
-
-### 7.1 Zod Schema with i18n
+The Zod schema should ideally be defined in the form file or imported from `@/schemas/`.
 
 ```typescript
-import { z } from 'zod'
-import { useTranslation } from 'react-i18next'
-
-// Define schema factory that uses translations
-function createCaseFormSchema(t: TFunction) {
-  return z.object({
-    caseNumber: z.string().min(1, t('caseForm.validation.required')),
-    clientName: z.string().min(2, t('caseForm.validation.minLength', { count: 2 })),
-    email: z.string().email(t('caseForm.validation.invalidEmail')).optional().or(z.literal('')),
-    status: z.enum(['Open', 'InProgress', 'Closed'])
-  })
-}
-
-type CaseFormValues = z.infer<ReturnType<typeof createCaseFormSchema>>
+const journalEntrySchema = z.object({
+  date: z.date(),
+  description: z.string().min(1, 'Description is required'),
+  lines: z
+    .array(
+      z.object({
+        accountId: z.string().min(1),
+        debit: z.number().min(0),
+        credit: z.number().min(0)
+      })
+    )
+    .refine((lines) => isBalanced(lines), 'Entries must be balanced')
+})
 ```
 
-### 7.2 RHF Setup with i18n
+---
 
-```typescript
-export function CaseForm({ defaultValues, mode = 'create' }: CaseFormProps) {
-  const { t, i18n } = useTranslation('legal')
-  const dir = i18n.language === 'ar' ? 'rtl' : 'ltr'
+## 4) Form Pattern (Strict)
 
-  // Create schema with current translations
-  const schema = React.useMemo(() => createCaseFormSchema(t), [t])
+### 4.1 Implementation Pattern
 
-  const form = useForm<CaseFormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: defaultValues || {
-      caseNumber: '',
-      clientName: '',
-      email: '',
-      status: 'Open'
+1.  **Imports:** Standard shadcn components + `react-hook-form` + `zod`.
+2.  **Hook Usage:** Use `useForm` with `zodResolver`.
+3.  **Field Rendering:** Use `FormField` from `@/components/ui/form`.
+4.  **Mutations:** Use TanStack Query hooks for submission.
+
+### 4.2 Code Example
+
+```tsx
+export const JournalEntryForm = ({ open, onOpenChange }: Props) => {
+  const { t } = useTranslation()
+  const { mutate: createEntry, isPending } = useCreateJournalEntry()
+
+  const form = useForm<JournalEntry>({
+    resolver: zodResolver(journalEntrySchema),
+    defaultValues: {
+      /* ... */
     }
   })
 
-  // ... rest of component
-}
-```
+  const onSubmit = (data: JournalEntry) => {
+    createEntry(data, {
+      onSuccess: () => {
+        form.reset()
+        onOpenChange(false)
+      }
+    })
+  }
 
----
-
-## 8) Field Rendering Standard (Strict)
-
-Every field MUST:
-
-- Use `Controller` from react-hook-form
-- Use shadcn `<FormField />` wrapper or custom field components
-- Include `text-start` for labels and inputs
-- Use `data-invalid={fieldState.invalid}`
-- Use `aria-invalid={fieldState.invalid}`
-- Display translated error messages
-
-### Canonical Pattern
-
-```tsx
-<Controller
-  control={form.control}
-  name="clientName"
-  render={({ field, fieldState }) => (
-    <div className="space-y-2">
-      <label 
-        htmlFor={field.name} 
-        className="text-start block text-sm font-medium"
-      >
-        {t('caseForm.fields.clientName.label')}
-      </label>
-
-      <Input
-        {...field}
-        id={field.name}
-        placeholder={t('caseForm.fields.clientName.placeholder')}
-        aria-invalid={fieldState.invalid}
-        data-invalid={fieldState.invalid}
-        className="text-start"
-      />
-
-      {fieldState.error && (
-        <p className="text-start text-sm text-destructive">
-          {fieldState.error.message}
-        </p>
-      )}
-    </div>
-  )}
-/>
-```
-
----
-
-## 9) Component Wiring Rules
-
-### Input / Textarea
-
-- Spread `{...field}` when possible
-- Ensure controlled value (`field.value ?? ""`)
-- Use `text-start` class
-
-### Select / Combobox
-
-- ❌ Do NOT spread `{...field}`
-- ✅ Use:
-  - `value={field.value}`
-  - `onValueChange={field.onChange}`
-
-```tsx
-<Select value={field.value} onValueChange={field.onChange}>
-  <SelectTrigger className="text-start">
-    <SelectValue placeholder={t('caseForm.fields.status.placeholder')} />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectItem value="Open">{t('status.open')}</SelectItem>
-    <SelectItem value="InProgress">{t('status.inProgress')}</SelectItem>
-    <SelectItem value="Closed">{t('status.closed')}</SelectItem>
-  </SelectContent>
-</Select>
-```
-
-### Checkbox / Switch
-
-```tsx
-<div className="flex items-center gap-2" dir={dir}>
-  <Checkbox
-    checked={!!field.value}
-    onCheckedChange={field.onChange}
-    id={field.name}
-  />
-  <label htmlFor={field.name} className="text-start text-sm">
-    {t('caseForm.fields.urgent.label')}
-  </label>
-</div>
-```
-
-### Numbers
-
-- Store as `number | undefined` in form state
-- Convert manually in `onChange`
-- Validate with Zod
-
-### Dates
-
-- Store as `Date | undefined`
-- Zod: `z.date()`
-- Use date picker with proper locale support
-
-```tsx
-<DatePicker
-  value={field.value}
-  onChange={field.onChange}
-  locale={i18n.language}
-  dir={dir}
-/>
-```
-
----
-
-## 10) Submission Standard (Bridge Commands)
-
-### 10.1 Bridge Command Structure
-
-```typescript
-// Frontend/packages/module-legal/src/api/commands/create-case.ts
-import { bridge } from '@asp/bridge-client'
-
-export interface CreateCaseCommand {
-  caseNumber: string
-  clientName: string
-  email?: string
-  status: string
-}
-
-export interface CreateCaseResponse {
-  id: string
-  caseNumber: string
-}
-
-export async function createCase(
-  command: CreateCaseCommand
-): Promise<Result<CreateCaseResponse>> {
-  return bridge.dispatch<CreateCaseResponse, CreateCaseCommand>(
-    'Legal.CreateCaseCommand',
-    command
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                {t('journal.form.fields.description.label')}
+              </FormLabel>
+              <FormControl>
+                <Input {...field} className="text-start" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" disabled={isPending}>
+          {t('common.save')}
+        </Button>
+      </form>
+    </Form>
   )
 }
 ```
 
-**Corresponding C# Handler (for reference):**
+---
 
-```csharp
-// AlgerianSME.Modules.Legal.Application/Features/Cases/CreateCaseCommandHandler.cs
-public record CreateCaseCommand : IRequest<Result<CreateCaseResponse>>
-{
-    public string CaseNumber { get; init; }
-    public string ClientName { get; init; }
-    public string? Email { get; init; }
-    public string Status { get; init; }
-}
-```
+## 5) Component Wiring Rules
 
-### 10.2 Submit Handler with i18n
-
-```typescript
-const [isSubmitting, setIsSubmitting] = useState(false)
-
-const onSubmit = async (data: CaseFormValues) => {
-  setIsSubmitting(true)
-
-  try {
-    const result = mode === 'create'
-      ? await createCase(data)
-      : await updateCase({ id: caseId!, ...data })
-
-    if (result.isSuccess) {
-      toast({
-        title: t('caseForm.messages.success'),
-        variant: 'default'
-      })
-      onSuccess?.(result.value)
-    } else {
-      // Handle field errors
-      if (result.fieldErrors) {
-        Object.entries(result.fieldErrors).forEach(([field, message]) => {
-          form.setError(field as keyof CaseFormValues, { message })
-        })
-      }
-
-      // Handle global errors
-      if (result.error) {
-        form.setError('root', { message: result.error })
-        toast({
-          title: t('caseForm.messages.error'),
-          description: result.error,
-          variant: 'destructive'
-        })
-      }
-    }
-  } catch (error) {
-    form.setError('root', { 
-      message: t('caseForm.messages.error') 
-    })
-    toast({
-      title: t('caseForm.messages.error'),
-      variant: 'destructive'
-    })
-  } finally {
-    setIsSubmitting(false)
-  }
-}
-```
-
-### 10.3 Expected Bridge Response
-
-Success:
-
-```typescript
-{
-  isSuccess: true,
-  value: {
-    id: "guid-123",
-    caseNumber: "2026-001"
-  }
-}
-```
-
-Failure:
-
-```typescript
-{
-  isSuccess: false,
-  error: "Validation failed",
-  fieldErrors: {
-    caseNumber: "Ce numéro existe déjà",
-    clientName: "Le nom est trop court"
-  }
-}
-```
+- **Select/Combobox:** Ensure `onValueChange={field.onChange}` and `value={field.value}` are used.
+- **Numbers:** Handle string-to-number conversion in `onChange` if using standard HTML inputs.
+- **Dates:** Use localized date pickers (e.g., shadcn `Popover` + `Calendar`).
 
 ---
 
-## 11) UX Defaults (Always Apply)
+## 6) UX Defaults
 
-- Disable submit button while submitting
-- Labels are mandatory (placeholders optional)
-- **UI language:** French by default, switchable to Arabic
-- **Text direction:** Automatic based on active language
-- Errors appear near the field (text-start alignment)
-- Keyboard navigation must work
-- Add field descriptions for unclear fields (translated)
-- Show loading spinner on submit button during submission
+- ✅ Disable submit button while `isPending`.
+- ✅ Show a loading spinner (`Icons.Loader2`) during submission.
+- ✅ Use `toast.success` and `toast.error` from `@/components/ui/sonner`.
+- ✅ Ensure `text-start` on all text-heavy elements to support RTL correctly.
 
 ---
 
-## 12) Complete Form Example
+## 7) Complete Form Example
 
 ```typescript
 "use client"
@@ -577,234 +206,131 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast" // Assuming shadcn toast
 import { Loader2 } from "lucide-react"
-import { createCase, updateCase } from "../../api/commands"
-import type { CaseDto } from "../../api/types"
+import { useCreateJournalEntry, useUpdateJournalEntry } from "@/hooks/use-journal-mutations" // Example mutation hooks
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form" // shadcn form components
 
 // Schema factory with i18n
-function createCaseFormSchema(t: TFunction) {
+function createJournalEntrySchema(t: TFunction) {
   return z.object({
-    caseNumber: z.string().min(1, t('caseForm.validation.required')),
-    clientName: z.string().min(2, t('caseForm.validation.minLength', { count: 2 })),
-    email: z.string().email(t('caseForm.validation.invalidEmail')).optional().or(z.literal('')),
-    status: z.enum(['Open', 'InProgress', 'Closed'])
+    date: z.date({
+      required_error: t('journal.form.validation.requiredDate')
+    }),
+    description: z.string().min(1, t('journal.form.validation.required')),
+    reference: z.string().optional(),
+    lines: z.array(z.object({
+      accountId: z.string().min(1, t('journal.form.validation.requiredAccount')),
+      debit: z.number().min(0, t('journal.form.validation.positiveAmount')).optional(),
+      credit: z.number().min(0, t('journal.form.validation.positiveAmount')).optional(),
+    })).refine(
+      (lines) => {
+        const totalDebit = lines.reduce((sum, line) => sum + (line.debit || 0), 0);
+        const totalCredit = lines.reduce((sum, line) => sum + (line.credit || 0), 0);
+        return totalDebit === totalCredit && totalDebit > 0; // Must be balanced and non-zero
+      },
+      t('journal.form.validation.unbalancedEntries')
+    )
   })
 }
 
-type CaseFormValues = z.infer<ReturnType<typeof createCaseFormSchema>>
+type JournalEntryFormValues = z.infer<ReturnType<typeof createJournalEntrySchema>>
 
-interface CaseFormProps {
+interface JournalEntryFormProps {
   mode?: 'create' | 'edit'
-  defaultValues?: Partial<CaseFormValues>
-  caseId?: string
-  onSuccess?: (data: CaseDto) => void
+  defaultValues?: Partial<JournalEntryFormValues>
+  entryId?: string // For edit mode
+  onSuccess?: (data: any) => void // Adjust type based on actual response
   onCancel?: () => void
 }
 
-export function CaseForm({
+export function JournalEntryForm({
   mode = 'create',
   defaultValues,
-  caseId,
+  entryId,
   onSuccess,
   onCancel
-}: CaseFormProps) {
-  const { t, i18n } = useTranslation('legal')
+}: JournalEntryFormProps) {
+  const { t, i18n } = useTranslation('journal')
   const { toast } = useToast()
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr'
 
-  const [isSubmitting, setIsSubmitting] = React.useState(false)
-
   // Create schema with current translations
-  const schema = React.useMemo(() => createCaseFormSchema(t), [t])
+  const schema = React.useMemo(() => createJournalEntrySchema(t), [t])
 
-  const form = useForm<CaseFormValues>({
+  const form = useForm<JournalEntryFormValues>({
     resolver: zodResolver(schema),
     defaultValues: defaultValues || {
-      caseNumber: '',
-      clientName: '',
-      email: '',
-      status: 'Open'
+      date: new Date(),
+      description: '',
+      reference: '',
+      lines: [{ accountId: '', debit: undefined, credit: undefined }]
     }
   })
 
-  const onSubmit = async (data: CaseFormValues) => {
-    setIsSubmitting(true)
+  const { mutate: createEntry, isPending: isCreating } = useCreateJournalEntry();
+  const { mutate: updateEntry, isPending: isUpdating } = useUpdateJournalEntry();
 
+  const isSubmitting = isCreating || isUpdating;
+
+  const onSubmit = async (data: JournalEntryFormValues) => {
     try {
-      const result = mode === 'create'
-        ? await createCase(data)
-        : await updateCase({ id: caseId!, ...data })
-
-      if (result.isSuccess && result.value) {
-        toast({
-          title: t('caseForm.messages.success'),
-          variant: 'default'
-        })
-        onSuccess?.(result.value)
-      } else {
-        if (result.fieldErrors) {
-          Object.entries(result.fieldErrors).forEach(([field, message]) => {
-            form.setError(field as keyof CaseFormValues, { message })
-          })
-        }
-
-        if (result.error) {
+      if (mode === 'create') {
+        createEntry(data, {
+          onSuccess: (response) => {
+            toast({
+              title: t('journal.form.messages.successCreate'),
+              variant: 'default'
+            })
+            onSuccess?.(response)
+            form.reset(defaultValues || {
+              date: new Date(),
+              description: '',
+              reference: '',
+              lines: [{ accountId: '', debit: undefined, credit: undefined }]
+            }); // Reset form after successful creation
+          },
+          onError: (error) => {
+            toast({
+              title: t('journal.form.messages.error'),
+              description: error.message || t('journal.form.messages.genericError'),
+              variant: 'destructive'
+            })
+          }
+        });
+      } else { // mode === 'edit'
+        if (!entryId) {
+          console.error("Entry ID is required for update mode.");
           toast({
-            title: t('caseForm.messages.error'),
-            description: result.error,
+            title: t('journal.form.messages.error'),
+            description: t('journal.form.messages.missingIdError'),
             variant: 'destructive'
-          })
+          });
+          return;
         }
+        updateEntry({ id: entryId, ...data }, {
+          onSuccess: (response) => {
+            toast({
+              title: t('journal.form.messages.successUpdate'),
+              variant: 'default'
+            })
+            onSuccess?.(response)
+          },
+          onError: (error) => {
+            toast({
+              title: t('journal.form.messages.error'),
+              description: error.message || t('journal.form.messages.genericError'),
+              variant: 'destructive'
+            })
+          }
+        });
       }
     } catch (error) {
       toast({
-        title: t('caseForm.messages.error'),
+        title: t('journal.form.messages.error'),
+        description: t('journal.form.messages.unexpectedError'),
         variant: 'destructive'
       })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  return (
-    <form 
-      onSubmit={form.handleSubmit(onSubmit)} 
-      className="space-y-6"
-      dir={dir}
-    >
-      <h2 className="text-start text-2xl font-bold">
-        {t(`caseForm.title.${mode}`)}
-      </h2>
-
-      {/* Case Number Field */}
-      <Controller
-        control={form.control}
-        name="caseNumber"
-        render={({ field, fieldState }) => (
-          <div className="space-y-2">
-            <label 
-              htmlFor={field.name} 
-              className="text-start block text-sm font-medium"
-            >
-              {t('caseForm.fields.caseNumber.label')}
-            </label>
-
-            <Input
-              {...field}
-              id={field.name}
-              placeholder={t('caseForm.fields.caseNumber.placeholder')}
-              aria-invalid={fieldState.invalid}
-              data-invalid={fieldState.invalid}
-              className="text-start"
-            />
-
-            <p className="text-start text-sm text-muted-foreground">
-              {t('caseForm.fields.caseNumber.description')}
-            </p>
-
-            {fieldState.error && (
-              <p className="text-start text-sm text-destructive">
-                {fieldState.error.message}
-              </p>
-            )}
-          </div>
-        )}
-      />
-
-      {/* Client Name Field */}
-      <Controller
-        control={form.control}
-        name="clientName"
-        render={({ field, fieldState }) => (
-          <div className="space-y-2">
-            <label 
-              htmlFor={field.name} 
-              className="text-start block text-sm font-medium"
-            >
-              {t('caseForm.fields.clientName.label')}
-            </label>
-
-            <Input
-              {...field}
-              id={field.name}
-              placeholder={t('caseForm.fields.clientName.placeholder')}
-              aria-invalid={fieldState.invalid}
-              className="text-start"
-            />
-
-            {fieldState.error && (
-              <p className="text-start text-sm text-destructive">
-                {fieldState.error.message}
-              </p>
-            )}
-          </div>
-        )}
-      />
-
-      {/* Email Field */}
-      <Controller
-        control={form.control}
-        name="email"
-        render={({ field, fieldState }) => (
-          <div className="space-y-2">
-            <label 
-              htmlFor={field.name} 
-              className="text-start block text-sm font-medium"
-            >
-              {t('caseForm.fields.email.label')}
-            </label>
-
-            <Input
-              {...field}
-              id={field.name}
-              type="email"
-              placeholder={t('caseForm.fields.email.placeholder')}
-              aria-invalid={fieldState.invalid}
-              className="text-start"
-              dir="ltr" // Email always LTR
-            />
-
-            {fieldState.error && (
-              <p className="text-start text-sm text-destructive">
-                {fieldState.error.message}
-              </p>
-            )}
-          </div>
-        )}
-      />
-
-      {/* Status Select */}
-      <Controller
-        control={form.control}
-        name="status"
-        render={({ field, fieldState }) => (
-          <div className="space-y-2">
-            <label 
-              htmlFor={field.name} 
-              className="text-start block text-sm font-medium"
-            >
-              {t('caseForm.fields.status.label')}
-            </label>
-
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger className="text-start">
-                <SelectValue placeholder={t('caseForm.fields.status.placeholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Open">{t('status.open')}</SelectItem>
-                <SelectItem value="InProgress">{t('status.inProgress')}</SelectItem>
-                <SelectItem value="Closed">{t('status.closed')}</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {fieldState.error && (
-              <p className="text-start text-sm text-destructive">
-                {fieldState.error.message}
-              </p>
-            )}
-          </div>
-        )}
       />
 
       {/* Root Error */}

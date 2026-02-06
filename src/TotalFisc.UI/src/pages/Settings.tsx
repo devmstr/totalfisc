@@ -46,8 +46,8 @@ export const Settings = () => {
 
         {/* Company Profile Tab */}
         <TabsContent value="company" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card className="border-border shadow-sm">
+          <div className="flex flex-wrap gap-4">
+            <Card className="flex-1 basis-full lg:basis-[calc(50%-0.5rem)] border-border shadow-sm">
               <CardHeader>
                 <CardTitle>{t('settings.general_info')}</CardTitle>
               </CardHeader>
@@ -76,7 +76,7 @@ export const Settings = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-border shadow-sm">
+            <Card className="flex-1 basis-full lg:basis-[calc(50%-0.5rem)] border-border shadow-sm">
               <CardHeader>
                 <CardTitle>{t('settings.tax_info')}</CardTitle>
               </CardHeader>

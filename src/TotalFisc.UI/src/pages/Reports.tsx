@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Icons } from '../components/Icons'
+import { Icons, type IconType } from '../components/Icons'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import {
@@ -18,7 +18,7 @@ export const Reports = () => {
       id: 1,
       title: t('reports.trial_balance'),
       description: t('mock_data.descriptions.trial_balance_desc'),
-      icon: Icons.FileText,
+      icon: 'FileText' as IconType,
       color: 'text-blue-500',
       bgColor: 'bg-blue-100'
     },
@@ -26,7 +26,7 @@ export const Reports = () => {
       id: 2,
       title: t('reports.general_ledger'),
       description: t('mock_data.descriptions.general_ledger_desc'),
-      icon: Icons.Banknote,
+      icon: 'Banknote' as IconType,
       color: 'text-emerald-500',
       bgColor: 'bg-emerald-100'
     },
@@ -34,7 +34,7 @@ export const Reports = () => {
       id: 3,
       title: t('reports.income_statement'),
       description: t('mock_data.descriptions.income_statement_desc'),
-      icon: Icons.ShoppingCart,
+      icon: 'ShoppingCart' as IconType,
       color: 'text-purple-500',
       bgColor: 'bg-purple-100'
     },
@@ -42,7 +42,7 @@ export const Reports = () => {
       id: 4,
       title: t('reports.balance_sheet'),
       description: t('mock_data.descriptions.balance_sheet_desc'),
-      icon: Icons.ListOrdered,
+      icon: 'ListOrdered' as IconType,
       color: 'text-amber-500',
       bgColor: 'bg-amber-100'
     },
@@ -50,7 +50,7 @@ export const Reports = () => {
       id: 5,
       title: t('reports.cash_flow'),
       description: t('mock_data.descriptions.cash_flow_desc'),
-      icon: Icons.Banknote,
+      icon: 'Banknote' as IconType,
       color: 'text-cyan-500',
       bgColor: 'bg-cyan-100'
     },
@@ -58,7 +58,7 @@ export const Reports = () => {
       id: 6,
       title: t('reports.vat_report'),
       description: t('mock_data.descriptions.vat_report_desc'),
-      icon: Icons.FileText,
+      icon: 'FileText' as IconType,
       color: 'text-red-500',
       bgColor: 'bg-red-100'
     }
@@ -171,7 +171,7 @@ export const Reports = () => {
       {/* Available Reports Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {reports.map((report) => {
-          const IconComponent = report.icon
+          const IconComponent = Icons[report.icon as IconType]
           return (
             <Card
               key={report.id}

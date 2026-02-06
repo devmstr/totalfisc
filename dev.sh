@@ -14,7 +14,7 @@ sleep 5
 # Start UI
 echo "🎨 Starting UI..."
 cd ../TotalFisc.UI
-npm run dev &
+pnpm run dev &
 UI_PID=$!
 
 echo "✅ Development environment ready!"

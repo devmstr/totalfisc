@@ -87,7 +87,7 @@ function RootComponent() {
             <Outlet />
           </ScrollArea>
         </main>
-        <TanStackRouterDevtools />
+        {/* <TanStackRouterDevtools /> */}
       </div>
     </DirectionProvider>
   )

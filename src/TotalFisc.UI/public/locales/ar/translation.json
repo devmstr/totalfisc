@@ -52,7 +52,12 @@
     "no_results": "لا توجد نتائج.",
     "accounts": "دليل الحسابات",
     "fiscal_years": "السنوات المالية",
-    "audit_logs": "سجلات التدقيق"
+    "audit_logs": "سجلات التدقيق",
+    "no_data": "لا توجد بيانات متاحة",
+    "status_open": "مفتوح",
+    "status_closed": "مغلق",
+    "status_active": "نشط",
+    "status_pending": "قيد الانتظار"
   },
   "audit": {
     "title": "سجلات التدقيق",
@@ -134,7 +139,8 @@
     "col_type": "النوع",
     "col_desc": "الوصف",
     "col_date": "التاريخ",
-    "col_amount": "المبلغ"
+    "col_amount": "المبلغ",
+    "transactions": "القيود"
   },
   "transactions": {
     "title": "القيود المحاسبية",
@@ -282,6 +288,46 @@
       "vat_report_desc": "تصريح الرسم على القيمة المضافة - المحصلة والقابلة للخصم",
       "scf_compliance_title": "مطابقة النظام المحاسبي المالي (SCF)",
       "scf_compliance_text": "جميع التقارير متوافقة مع المعايير المحاسبية الجزائرية (SCF) والمرسوم 09-110 المتعلق بالمحاسبة المعلوماتية. التصديرات متوافقة مع Jibaya'tic للتصريحات الضريبية."
+    }
+  },
+  "journal": {
+    "form": {
+      "title_create": "قيد جديد",
+      "title_edit": "تعديل القيد",
+      "desc_create": "أنشئ قيداً جديداً متوازناً.",
+      "desc_edit": "قم بتحديث تفاصيل قيدك.",
+      "fields": {
+        "journal": "اليومية",
+        "date": "التاريخ",
+        "reference": "المرجع",
+        "description": "البيان",
+        "account": "الحساب",
+        "debit": "مدين",
+        "credit": "دائن",
+        "actions": "الإجراءات"
+      },
+      "add_line": "إضافة سطر",
+      "totals": "المجاميع",
+      "unbalanced_by": "القيد غير متوازن بمقدار {{amount}}",
+      "save": "حفظ القيد",
+      "cancel": "إلغاء",
+      "placeholders": {
+        "select": "اختر...",
+        "pick_date": "اختر تاريخاً",
+        "reference": "المرجع-001",
+        "global_desc": "وصف شامل للعملية...",
+        "search_account": "البحث عن حساب...",
+        "no_account": "لم يتم العثور على حساب.",
+        "account_placeholder": "الحساب..."
+      },
+      "validation": {
+        "required": "هذا الحقل مطلوب",
+        "account_required": "الحساب مطلوب",
+        "desc_required": "البيان مطلوب",
+        "min_lines": "مطلوب سطرين على الأقل",
+        "unbalanced": "يجب أن يتساوى مجموع المدين مع مجموع الدائن",
+        "positive_amount": "يجب أن يكون المبلغ موجباً"
+      }
     }
   }
 }

@@ -55,6 +55,14 @@ public class JournalEntry : AggregateRoot
         _lines.Add(line);
     }
 
+    public void ClearLines()
+    {
+        if (Status == EntryStatus.Posted)
+            throw new InvalidOperationException("Cannot modify lines of a posted entry.");
+
+        _lines.Clear();
+    }
+
     public void RemoveLine(Guid lineId)
     {
         if (Status == EntryStatus.Posted)
@@ -98,5 +106,15 @@ public class JournalEntry : AggregateRoot
             throw new InvalidOperationException("Cannot void a posted entry. Use contra-passation instead.");
 
         Status = EntryStatus.Voided;
+    }
+
+    public void SetValue(string description, DateTime entryDate, string reference)
+    {
+        if (Status == EntryStatus.Posted)
+            throw new InvalidOperationException("Cannot update a posted entry.");
+
+        Description = description;
+        EntryDate = entryDate;
+        Reference = reference;
     }
 }

@@ -52,7 +52,12 @@
     "no_results": "Aucun résultat.",
     "accounts": "Plan Comptable",
     "fiscal_years": "Exercices",
-    "audit_logs": "Logs d'Audit"
+    "audit_logs": "Logs d'Audit",
+    "no_data": "Aucune donnée disponible",
+    "status_open": "Ouvert",
+    "status_closed": "Clôturé",
+    "status_active": "Actif",
+    "status_pending": "En attente"
   },
   "audit": {
     "title": "Logs d'Audit",
@@ -134,7 +139,8 @@
     "col_type": "Type",
     "col_desc": "Description",
     "col_date": "Date",
-    "col_amount": "Montant"
+    "col_amount": "Montant",
+    "transactions": "Écritures"
   },
   "transactions": {
     "title": "Écritures Comptables",
@@ -282,6 +288,46 @@
       "vat_report_desc": "Déclaration TVA - Collectée et déductible",
       "scf_compliance_title": "Conformité SCF (Système Comptable Financier)",
       "scf_compliance_text": "Tous les rapports sont conformes aux normes comptables algériennes (SCF) et au Décret 09-110 relatif à la comptabilité informatisée. Les exports sont compatibles avec Jibaya'tic pour les déclarations fiscales."
+    }
+  },
+  "journal": {
+    "form": {
+      "title_create": "Nouvelle Écriture",
+      "title_edit": "Modifier l'Écriture",
+      "desc_create": "Créez une nouvelle écriture équilibrée.",
+      "desc_edit": "Mettez à jour les détails de votre écriture.",
+      "fields": {
+        "journal": "Journal",
+        "date": "Date",
+        "reference": "Référence",
+        "description": "Libellé",
+        "account": "Compte",
+        "debit": "Débit",
+        "credit": "Crédit",
+        "actions": "Actions"
+      },
+      "add_line": "Ajouter une ligne",
+      "totals": "Totaux",
+      "unbalanced_by": "L'écriture est déséquilibrée de {{amount}}",
+      "save": "Enregistrer l'Écriture",
+      "cancel": "Annuler",
+      "placeholders": {
+        "select": "Sélectionner...",
+        "pick_date": "Choisir une date",
+        "reference": "Réf-001",
+        "global_desc": "Description globale de l'opération...",
+        "search_account": "Rechercher un compte...",
+        "no_account": "Aucun compte trouvé.",
+        "account_placeholder": "Compte..."
+      },
+      "validation": {
+        "required": "Ce champ est obligatoire",
+        "account_required": "Le compte est obligatoire",
+        "desc_required": "Le libellé est obligatoire",
+        "min_lines": "Au moins 2 lignes sont requises",
+        "unbalanced": "Le débit total doit être égal au crédit total",
+        "positive_amount": "Le montant doit être positif"
+      }
     }
   }
 }

@@ -15,17 +15,52 @@ import {
 import { DataTable } from '../components/shared/data-table/data-table'
 import { getColumns } from '../components/transactions/columns'
 import { JournalEntryForm } from '../components/journal/JournalEntryForm'
+import { useFiscalYears } from '../hooks/use-fiscal-years'
 import { useJournalEntries } from '../hooks/use-journal-entries'
-import type { JournalEntry } from '../schemas/journal-entry'
+import {
+  useDeleteJournalEntry,
+  usePostJournalEntry
+} from '../hooks/use-journal-mutation'
 
 export const Transactions = () => {
   const { t } = useTranslation()
   const { language } = useI18n()
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [editingEntryId, setEditingEntryId] = useState<string | null>(null)
+  const [selectedFiscalYearId, setSelectedFiscalYearId] = useState<string>('')
 
-  // For MVP, we use a placeholder or derived fiscal year ID
-  const fiscalYearId = 'current'
+  const { data: fiscalYears } = useFiscalYears()
+
+  // Derived fiscalYearId: uses user selection or defaults to open/first year
+  const fiscalYearId =
+    selectedFiscalYearId ||
+    (fiscalYears?.find((fy) => fy.status === 'Open') || fiscalYears?.[0])?.id ||
+    ''
+
   const { data: entries, isLoading } = useJournalEntries(fiscalYearId)
+  const { mutate: deleteEntry } = useDeleteJournalEntry()
+  const { mutate: postEntry } = usePostJournalEntry()
+
+  const handleEdit = (entry: any) => {
+    setEditingEntryId(entry.id)
+    setIsFormOpen(true)
+  }
+
+  const handleDelete = (id: string) => {
+    if (window.confirm('Are you sure you want to delete this entry?')) {
+      deleteEntry(id)
+    }
+  }
+
+  const handlePost = (id: string) => {
+    if (
+      window.confirm(
+        'Are you sure you want to post this entry? This action is irreversible.'
+      )
+    ) {
+      postEntry(id)
+    }
+  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat(language === 'ar' ? 'ar-DZ' : 'fr-DZ', {
@@ -35,18 +70,18 @@ export const Transactions = () => {
     }).format(amount)
   }
 
-  const handleSaveEntry = (entry: JournalEntry) => {
-    console.log('Saved entry:', entry)
-    // Here we would call API to save
-    // And refresher the table
-  }
-
   // Calculate stats from entries
   const totalEntries = entries?.length || 0
   const totalDebit =
-    entries?.reduce((acc, curr) => acc + curr.totalDebit, 0) || 0
+    entries?.reduce(
+      (acc: number, curr: any) => acc + (curr.totalDebit || 0),
+      0
+    ) || 0
   const totalCredit =
-    entries?.reduce((acc, curr) => acc + curr.totalCredit, 0) || 0
+    entries?.reduce(
+      (acc: number, curr: any) => acc + (curr.totalCredit || 0),
+      0
+    ) || 0
 
   return (
     <div className="p-6 space-y-6 animate-in fade-in duration-500">
@@ -60,18 +95,39 @@ export const Transactions = () => {
             {t('transactions.subtitle')}
           </p>
         </div>
-        <Button
-          className="bg-primary text-white hover:bg-primary/90 shadow-md"
-          onClick={() => setIsFormOpen(true)}
-        >
-          <Icons.Plus className="w-4 h-4 me-2" />
-          {t('transactions.new_entry')}
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="min-w-40">
+            <Select
+              value={fiscalYearId}
+              onValueChange={setSelectedFiscalYearId}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Fiscal Year" />
+              </SelectTrigger>
+              <SelectContent>
+                {fiscalYears?.map((fy) => (
+                  <SelectItem key={fy.id} value={fy.id}>
+                    {fy.yearNumber} (
+                    {t(`common.status_${fy.status.toLowerCase()}`) || fy.status}
+                    )
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            className="bg-primary text-white hover:bg-primary/90 shadow-md"
+            onClick={() => setIsFormOpen(true)}
+          >
+            <Icons.Plus className="w-4 h-4 me-2" />
+            {t('transactions.new_entry')}
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="p-4 shadow-sm border-border overflow-hidden">
+      <div className="flex flex-wrap gap-4">
+        <Card className="flex-1 min-w-50 p-4 shadow-sm border-border overflow-hidden">
           <div className="flex items-center justify-between gap-2 overflow-hidden">
             <div className="overflow-hidden">
               <p className="text-sm font-medium text-muted-foreground truncate">
@@ -85,7 +141,7 @@ export const Transactions = () => {
           </div>
         </Card>
 
-        <Card className="p-4 shadow-sm border-border overflow-hidden">
+        <Card className="flex-1 min-w-50 p-4 shadow-sm border-border overflow-hidden">
           <div className="flex items-center justify-between gap-2 overflow-hidden">
             <div className="overflow-hidden">
               <p className="text-sm font-medium text-muted-foreground truncate">
@@ -102,7 +158,7 @@ export const Transactions = () => {
           </div>
         </Card>
 
-        <Card className="p-4 shadow-sm border-border overflow-hidden">
+        <Card className="flex-1 min-w-50 p-4 shadow-sm border-border overflow-hidden">
           <div className="flex items-center justify-between gap-2 overflow-hidden">
             <div className="overflow-hidden">
               <p className="text-sm font-medium text-muted-foreground truncate">
@@ -119,7 +175,7 @@ export const Transactions = () => {
           </div>
         </Card>
 
-        <Card className="p-4 shadow-sm border-border overflow-hidden">
+        <Card className="flex-1 min-w-50 p-4 shadow-sm border-border overflow-hidden">
           <div className="flex items-center justify-between gap-2 overflow-hidden">
             <div className="overflow-hidden">
               <p className="text-sm font-medium text-muted-foreground truncate">
@@ -148,7 +204,7 @@ export const Transactions = () => {
       {/* Filters */}
       <Card className="p-4 shadow-sm border-border">
         <div className="flex flex-wrap items-end gap-4">
-          <div className="flex-1 min-w-50">
+          <div className="flex-1 min-w-40 lg:min-w-60">
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
               {t('transactions.journal')}
             </label>
@@ -169,7 +225,7 @@ export const Transactions = () => {
             </Select>
           </div>
 
-          <div className="flex-1 min-w-50">
+          <div className="flex-1 min-w-40 lg:min-w-60">
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
               {t('transactions.status')}
             </label>
@@ -187,7 +243,7 @@ export const Transactions = () => {
             </Select>
           </div>
 
-          <div className="flex-1 min-w-50"></div>
+          <div className="flex-2 hidden lg:block"></div>
 
           <div className="flex-none">
             <Button variant="outline">
@@ -201,8 +257,16 @@ export const Transactions = () => {
       {/* Entries Table */}
       <Card className="p-4 shadow-sm border-border">
         <DataTable
-          columns={getColumns(t, formatCurrency, (status) =>
-            status === 'posted' ? 'bg-emerald-500' : 'bg-amber-500 text-white'
+          columns={getColumns(
+            t,
+            formatCurrency,
+            (status) =>
+              status === 'posted'
+                ? 'bg-emerald-500'
+                : 'bg-amber-500 text-white',
+            handleEdit,
+            handleDelete,
+            handlePost
           )}
           data={entries || []}
           searchKey="description"
@@ -212,8 +276,12 @@ export const Transactions = () => {
 
       <JournalEntryForm
         open={isFormOpen}
-        onOpenChange={setIsFormOpen}
-        onSave={handleSaveEntry}
+        onOpenChange={(open) => {
+          setIsFormOpen(open)
+          if (!open) setEditingEntryId(null)
+        }}
+        id={editingEntryId}
+        fiscalYearId={fiscalYearId}
       />
     </div>
   )

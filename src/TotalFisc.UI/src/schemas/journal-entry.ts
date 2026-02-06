@@ -1,50 +1,75 @@
 import { z } from 'zod'
+import type { TFunction } from 'i18next'
 
-export const journalEntryLineSchema = z
-  .object({
-    accountId: z.number().min(1, 'Account is required'),
-    accountLabel: z.string().optional(),
-    accountNumber: z.string().optional(),
-    thirdPartyId: z.number().optional(),
-    description: z.string().min(1, 'Description is required'),
-    debit: z.number().min(0).default(0),
-    credit: z.number().min(0).default(0)
-  })
-  .refine((data) => data.debit > 0 || data.credit > 0, {
-    message: 'Line must have a debit or credit amount',
-    path: ['debit']
-  })
+export const createJournalEntryLineSchema = (t: TFunction) =>
+  z
+    .object({
+      accountId: z
+        .string()
+        .min(1, t('journal.form.validation.account_required')),
+      accountLabel: z.string().optional(),
+      accountNumber: z.string().optional(),
+      thirdPartyId: z.string().optional(),
+      description: z
+        .string()
+        .min(1, t('journal.form.validation.desc_required')),
+      debit: z
+        .number()
+        .min(0, t('journal.form.validation.positive_amount'))
+        .default(0),
+      credit: z
+        .number()
+        .min(0, t('journal.form.validation.positive_amount'))
+        .default(0)
+    })
+    .refine((data) => data.debit > 0 || data.credit > 0, {
+      message: t('journal.form.validation.positive_amount'),
+      path: ['debit']
+    })
 
-export type JournalEntryLine = z.infer<typeof journalEntryLineSchema>
+export const createJournalEntrySchema = (t: TFunction) =>
+  z
+    .object({
+      date: z.date({
+        message: t('journal.form.validation.required')
+      }),
+      journalCode: z.string().min(1, t('journal.form.validation.required')),
+      reference: z.string().min(1, t('journal.form.validation.required')),
+      description: z.string().min(1, t('journal.form.validation.required')),
+      lines: z
+        .array(createJournalEntryLineSchema(t))
+        .min(2, t('journal.form.validation.min_lines'))
+    })
+    .refine(
+      (data) => {
+        const totalDebit = data.lines.reduce(
+          (sum, line) => sum + (line.debit || 0),
+          0
+        )
+        const totalCredit = data.lines.reduce(
+          (sum, line) => sum + (line.credit || 0),
+          0
+        )
+        return Math.abs(totalDebit - totalCredit) < 0.01 // Floating point tolerance
+      },
+      {
+        message: t('journal.form.validation.unbalanced'),
+        path: ['lines'] // Attach error to lines field
+      }
+    )
 
-export const journalEntrySchema = z
-  .object({
-    date: z.date({
-      message: 'Date is required'
-    }),
-    journalCode: z.string().min(1, 'Journal code is required'),
-    reference: z.string().min(1, 'Reference is required'),
-    description: z.string().min(1, 'Global description is required'),
-    lines: z
-      .array(journalEntryLineSchema)
-      .min(2, 'At least 2 lines are required')
-  })
-  .refine(
-    (data) => {
-      const totalDebit = data.lines.reduce(
-        (sum, line) => sum + (line.debit || 0),
-        0
-      )
-      const totalCredit = data.lines.reduce(
-        (sum, line) => sum + (line.credit || 0),
-        0
-      )
-      return Math.abs(totalDebit - totalCredit) < 0.01 // Floating point tolerance
-    },
-    {
-      message: 'Total Debit must equal Total Credit',
-      path: ['lines'] // Attach error to lines field
-    }
-  )
-
-export type JournalEntry = z.infer<typeof journalEntrySchema>
+export type JournalEntry = {
+  date: Date
+  journalCode: string
+  reference: string
+  description: string
+  lines: {
+    accountId: string
+    description: string
+    debit: number
+    credit: number
+    accountLabel?: string
+    accountNumber?: string
+    thirdPartyId?: string
+  }[]
+}

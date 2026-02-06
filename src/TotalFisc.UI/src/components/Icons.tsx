@@ -25,10 +25,13 @@ import {
   Save,
   Trash,
   ArrowRight,
-  Unlock
+  Unlock,
+  Loader2
 } from 'lucide-react'
+import { TbFileStack } from 'react-icons/tb'
 
 export const Icons = {
+  FileInvoicesStack: TbFileStack,
   Building,
   LayoutDashboard,
   ListOrdered,
@@ -55,5 +58,8 @@ export const Icons = {
   Save,
   Trash,
   Unlock,
-  ArrowRight
+  ArrowRight,
+  Loader2
 }
+
+export type IconType = keyof typeof Icons

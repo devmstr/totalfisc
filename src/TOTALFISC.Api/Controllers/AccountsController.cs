@@ -23,6 +23,14 @@ public class AccountsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(string id)
+    {
+        var result = await _mediator.Send(new GetAccountByIdQuery(id));
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateAccountCommand command)
     {

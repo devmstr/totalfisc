@@ -28,10 +28,33 @@ public class JournalEntriesController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(string id)
+    {
+        var result = await _mediator.Send(new GetJournalEntryByIdQuery(id));
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateJournalEntryCommand command)
     {
         var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(string id, [FromBody] UpdateJournalEntryCommand command)
+    {
+        if (id != command.Id) return BadRequest("ID mismatch");
+        var result = await _mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var result = await _mediator.Send(new DeleteJournalEntryCommand(id));
         return Ok(result);
     }
 }

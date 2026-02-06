@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Icons } from '../Icons'
 import type { Control, UseFormRegister } from 'react-hook-form'
 import type { KeyboardEvent } from 'react'
+import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
 
 interface EntryLineRowProps {
   index: number
@@ -20,39 +22,53 @@ interface EntryLineRowProps {
     fieldName: string,
     index: number
   ) => void
+  className: {
+    account: string
+    desc: string
+    debit: string
+    credit: string
+    action: string
+  }
 }
+
+import { AccountSelector } from './AccountSelector'
 
 export const EntryLineRow = ({
   index,
   control,
+  register: _register,
   remove,
-  onKeyDown
+  onKeyDown,
+  className
 }: EntryLineRowProps) => {
+  const { t } = useTranslation()
+
   return (
-    <div className="grid grid-cols-12 gap-2 items-start py-2 border-b border-border/50 last:border-0 hover:bg-muted/20 transition-colors">
-      {/* Account Number */}
-      <div className="col-span-2">
+    <div className="flex gap-2 items-start py-2 border-b border-border/50 last:border-0 hover:bg-muted/20 transition-colors">
+      {/* AccountSelector */}
+      <div className={className.account}>
         <FormField
           control={control}
-          name={`lines.${index}.accountNumber`}
+          name={`lines.${index}.accountId`}
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input
-                  {...field}
-                  placeholder="Acc #"
-                  className="font-mono"
-                  onKeyDown={(e) => onKeyDown(e, 'accountNumber', index)}
+                <AccountSelector
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder={t(
+                    'journal.form.placeholders.account_placeholder'
+                  )}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-start" />
             </FormItem>
           )}
         />
       </div>
 
       {/* Description */}
-      <div className="col-span-4">
+      <div className={className.desc}>
         <FormField
           control={control}
           name={`lines.${index}.description`}
@@ -61,22 +77,23 @@ export const EntryLineRow = ({
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Description"
+                  placeholder={t('journal.form.fields.description')}
+                  className="text-start"
                   onKeyDown={(e) => onKeyDown(e, 'description', index)}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-start" />
             </FormItem>
           )}
         />
       </div>
 
       {/* Debit */}
-      <div className="col-span-2">
+      <div className={className.debit}>
         <FormField
           control={control}
           name={`lines.${index}.debit`}
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormControl>
                 <Input
@@ -89,20 +106,21 @@ export const EntryLineRow = ({
                     field.onChange(parseFloat(e.target.value) || 0)
                   }
                   onKeyDown={(e) => onKeyDown(e, 'debit', index)}
+                  data-invalid={fieldState.invalid}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-start" />
             </FormItem>
           )}
         />
       </div>
 
       {/* Credit */}
-      <div className="col-span-2">
+      <div className={className.credit}>
         <FormField
           control={control}
           name={`lines.${index}.credit`}
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormControl>
                 <Input
@@ -115,16 +133,17 @@ export const EntryLineRow = ({
                     field.onChange(parseFloat(e.target.value) || 0)
                   }
                   onKeyDown={(e) => onKeyDown(e, 'credit', index)}
+                  data-invalid={fieldState.invalid}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-start" />
             </FormItem>
           )}
         />
       </div>
 
       {/* Actions */}
-      <div className="col-span-2 flex justify-center">
+      <div className={cn(className.action, 'flex justify-center')}>
         <Button
           variant="ghost"
           size="icon"

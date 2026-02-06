@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Icons } from '../Icons'
+import { Icons, type IconType } from '../Icons'
 import { cn } from '../../lib/utils'
 import { useI18n } from '@/lib/i18n-context'
 
@@ -24,47 +24,47 @@ export const Sidebar = ({
     {
       id: 'dashboard',
       label: t('common.dashboard'),
-      icon: Icons.LayoutDashboard
+      icon: 'LayoutDashboard' as IconType
     },
     {
       id: 'transactions',
       label: t('common.transactions'),
-      icon: Icons.Banknote
+      icon: 'FileInvoicesStack' as IconType
     },
     {
       id: 'sales',
       label: t('common.sales'),
-      icon: Icons.ShoppingCart
+      icon: 'ShoppingCart' as IconType
     },
     {
       id: 'purchases',
       label: t('common.purchases'),
-      icon: Icons.ListOrdered
+      icon: 'ListOrdered' as IconType
     },
     {
       id: 'tiers',
       label: t('common.tiers'),
-      icon: Icons.Users
+      icon: 'Users' as IconType
     },
     {
       id: 'reports',
       label: t('common.reports'),
-      icon: Icons.FileText
+      icon: 'FileText' as IconType
     },
     {
       id: 'accounts',
       label: t('common.accounts'),
-      icon: Icons.BookOpen
+      icon: 'BookOpen' as IconType
     },
     {
       id: 'fiscal-years',
       label: t('common.fiscal_years'),
-      icon: Icons.Calendar
+      icon: 'Calendar' as IconType
     },
     {
       id: 'audit-logs',
       label: t('audit.title', 'Audit Logs'),
-      icon: Icons.Lock
+      icon: 'Lock' as IconType
     }
   ]
 
@@ -72,7 +72,7 @@ export const Sidebar = ({
     {
       id: 'settings',
       label: t('common.settings'),
-      icon: Icons.Settings
+      icon: 'Settings' as IconType
     }
   ]
 
@@ -160,17 +160,22 @@ export const Sidebar = ({
               w-full
                 "
             >
-              <item.icon
-                className="
-        h-5 w-5
-        shrink-0
-        opacity-70
-        transition-opacity
-        group-hover:opacity-100
-        data-[active=true]:opacity-100
-        data-[active=true]:bg-sidebar-border
-      "
-              />
+              {(() => {
+                const Icon = Icons[item.icon as IconType]
+                return (
+                  <Icon
+                    className="
+                    h-5 w-5
+                    shrink-0
+                    opacity-70
+                    transition-opacity
+                    group-hover:opacity-100
+                    data-[active=true]:opacity-100
+                    data-[active=true]:bg-sidebar-border
+                  "
+                  />
+                )
+              })()}
               <span className="flex-1 text-start">{item.label}</span>
             </button>
           ))}
@@ -184,7 +189,12 @@ export const Sidebar = ({
               onClick={() => onNavigate(item.id || '')}
               className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors duration-200 w-full"
             >
-              <item.icon className="w-5 h-5 shrink-0 opacity-70 group-hover:opacity-100 transition-opacity" />
+              {(() => {
+                const Icon = Icons[item.icon as IconType]
+                return (
+                  <Icon className="w-5 h-5 shrink-0 opacity-70 group-hover:opacity-100 transition-opacity" />
+                )
+              })()}
               <span className="text-start">{item.label}</span>
             </button>
           ))}

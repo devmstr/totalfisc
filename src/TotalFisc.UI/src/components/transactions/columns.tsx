@@ -19,7 +19,10 @@ export type TransactionEntry = {
 export const getColumns = (
   t: any,
   formatCurrency: (amount: number) => string,
-  getStatusColor: (status: string) => string
+  getStatusColor: (status: string) => string,
+  onEdit?: (entry: TransactionEntry) => void,
+  onDelete?: (id: string) => void,
+  onPost?: (id: string) => void
 ): ColumnDef<TransactionEntry>[] => [
   {
     accessorKey: 'entryNumber',
@@ -162,13 +165,22 @@ export const getColumns = (
         className="justify-center"
       />
     ),
-    cell: () => (
+    cell: ({ row }) => (
       <div className="flex items-center justify-center gap-2">
-        <Button variant="ghost" size="sm">
-          <Icons.FileText className="w-4 h-4" />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onEdit?.(row.original)}
+        >
+          <Icons.Edit className="w-4 h-4" />
         </Button>
-        <Button variant="ghost" size="sm">
-          <Icons.Settings className="w-4 h-4" />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+          onClick={() => onDelete?.(row.original.id)}
+        >
+          <Icons.Trash className="w-4 h-4" />
         </Button>
       </div>
     )

@@ -4,6 +4,8 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from './lib/query-client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
+import { Toaster } from '@/components/ui/sonner'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 const router = createRouter({ routeTree })
 
@@ -14,12 +16,14 @@ declare module '@tanstack/react-router' {
   }
 }
 
-function App() {
+export function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="totalfisc-ui-theme">
+    <ThemeProvider defaultTheme="light" storageKey="totalfisc-theme">
       <I18nProvider>
         <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
+          <Toaster position="top-right" richColors />
+          {/* <ReactQueryDevtools initialIsOpen={false} /> */}
         </QueryClientProvider>
       </I18nProvider>
     </ThemeProvider>
