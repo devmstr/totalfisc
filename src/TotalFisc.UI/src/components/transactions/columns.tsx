@@ -5,14 +5,14 @@ import { Icons } from '../Icons'
 import { DataTableColumnHeader } from '../shared/data-table/data-table-column-header'
 
 export type TransactionEntry = {
-  id: number
+  id: string
   entryNumber: string
-  date: string
-  journal: string
+  entryDate: string
+  journalCode: string
   reference: string
   description: string
-  debit: number
-  credit: number
+  totalDebit: number
+  totalCredit: number
   status: string
 }
 
@@ -37,7 +37,7 @@ export const getColumns = (
     )
   },
   {
-    accessorKey: 'date',
+    accessorKey: 'entryDate',
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
@@ -49,7 +49,7 @@ export const getColumns = (
     }
   },
   {
-    accessorKey: 'journal',
+    accessorKey: 'journalCode',
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
@@ -60,8 +60,8 @@ export const getColumns = (
       title: t('transactions.journal')
     },
     cell: ({ row }) => {
-      const journal = row.getValue('journal') as string
-      return <Badge variant="outline">{journal}</Badge>
+      const journalCode = row.getValue('journalCode') as string
+      return <Badge variant="outline">{journalCode}</Badge>
     }
   },
   {
@@ -92,7 +92,7 @@ export const getColumns = (
     }
   },
   {
-    accessorKey: 'debit',
+    accessorKey: 'totalDebit',
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
@@ -105,12 +105,12 @@ export const getColumns = (
     },
     cell: ({ row }) => (
       <div className="text-end font-bold ltr:font-poppins rtl:font-somar">
-        {formatCurrency(row.getValue('debit'))}
+        {formatCurrency(row.getValue('totalDebit'))}
       </div>
     )
   },
   {
-    accessorKey: 'credit',
+    accessorKey: 'totalCredit',
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
@@ -123,7 +123,7 @@ export const getColumns = (
     },
     cell: ({ row }) => (
       <div className="text-end font-bold ltr:font-poppins rtl:font-somar">
-        {formatCurrency(row.getValue('credit'))}
+        {formatCurrency(row.getValue('totalCredit'))}
       </div>
     )
   },

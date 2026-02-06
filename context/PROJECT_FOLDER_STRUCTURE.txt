@@ -27,13 +27,12 @@ TOTALFISC/
 │       └── accounting-manual.md
 │
 ├── src/                                        # Source code
-│   ├── TOTALFISC.Host/                  # WPF Desktop Host ⭐
+│   ├── TotalFisc.Desktop/               # WPF Desktop Host ⭐
 │   ├── TOTALFISC.Api/                   # ASP.NET Core API ⭐
-│   ├── TOTALFISC.Web/                   # React Frontend ⭐
+│   ├── TotalFisc.UI/                    # React Frontend ⭐
 │   ├── TOTALFISC.Domain/                # Domain Layer (DDD) ⭐
 │   ├── TOTALFISC.Application/           # Application Layer (CQRS) ⭐
 │   ├── TOTALFISC.Infrastructure/        # Infrastructure Layer ⭐
-│   ├── TOTALFISC.Persistence/           # Database Layer ⭐
 │   └── TOTALFISC.Shared/                # Shared Utilities ⭐
 │
 ├── tests/                                      # Test projects
@@ -83,9 +82,9 @@ TOTALFISC/
 1. WPF HOST PROJECT (Desktop Container)
 ═══════════════════════════════════════════════════════════════════════════════
 
-src/TOTALFISC.Host/
+src/TotalFisc.Desktop/
 │
-├── TOTALFISC.Host.csproj                # WPF project file
+├── TotalFisc.Desktop.csproj                # WPF project file
 │
 ├── App.xaml                                   # Application entry point
 ├── App.xaml.cs
@@ -213,7 +212,7 @@ src/TOTALFISC.Api/
 3. REACT FRONTEND PROJECT
 ═══════════════════════════════════════════════════════════════════════════════
 
-src/TOTALFISC.Web/
+src/TotalFisc.UI/
 │
 ├── package.json                               # NPM dependencies
 ├── package-lock.json
@@ -670,9 +669,9 @@ src/TOTALFISC.Infrastructure/
 7. PERSISTENCE LAYER (Database Access)
 ═══════════════════════════════════════════════════════════════════════════════
 
-src/TOTALFISC.Persistence/
+src/TotalFisc.Infrastructure/
 │
-├── TOTALFISC.Persistence.csproj
+├── TotalFisc.Infrastructure.csproj
 │
 ├── ApplicationDbContext.cs                 # EF Core DbContext
 │

@@ -66,7 +66,7 @@
 
 ```bash
 # Navigate to project directory
-cd src/TOTALFISC.Host
+cd src/TotalFisc.Desktop
 
 # Publish for Windows x64
 dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile=false
@@ -78,7 +78,7 @@ dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile
 
 ```bash
 # Navigate to frontend
-cd src/TOTALFISC.Web
+cd src/TotalFisc.UI
 
 # Install dependencies
 npm install
@@ -97,12 +97,12 @@ $deployDir = "deploy/TOTALFISC"
 New-Item -ItemType Directory -Force -Path $deployDir
 
 # Copy backend binaries
-Copy-Item -Path "src/TOTALFISC.Host/bin/Release/net9.0-windows/win-x64/publish/*" `
+Copy-Item -Path "src/TotalFisc.Desktop/bin/Release/net9.0-windows/win-x64/publish/*" `
           -Destination $deployDir -Recurse
 
 # Copy frontend build
 New-Item -ItemType Directory -Force -Path "$deployDir/Resources/WebApp"
-Copy-Item -Path "src/TOTALFISC.Web/dist/*" `
+Copy-Item -Path "src/TotalFisc.UI/dist/*" `
           -Destination "$deployDir/Resources/WebApp" -Recurse
 
 # Copy database schema

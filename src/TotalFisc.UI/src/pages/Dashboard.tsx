@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Input } from '../components/ui/input'
 import { normalizeString } from '../lib/utils'
+import { useAccounts } from '../hooks/use-accounts'
+import { useJournalEntries } from '../hooks/use-journal-entries'
 import {
   Table,
   TableBody,
@@ -14,12 +16,20 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from '../components/ui/table'
+} from '@/components/ui/table'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export const Dashboard = () => {
   const { t } = useTranslation()
   const { language } = useI18n()
   const [searchQuery, setSearchQuery] = React.useState('')
+
+  // For MVP, we use a placeholder or derived fiscal year ID
+  const fiscalYearId = 'current'
+
+  const { data: accounts, isLoading: isLoadingAccounts } = useAccounts()
+  const { data: transactions, isLoading: isLoadingTransactions } =
+    useJournalEntries(fiscalYearId)
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat(language === 'ar' ? 'ar-DZ' : 'fr-DZ', {
@@ -28,6 +38,8 @@ export const Dashboard = () => {
       minimumFractionDigits: 2
     }).format(amount)
   }
+
+  const isLoading = isLoadingAccounts || isLoadingTransactions
 
   return (
     <div className="p-6 space-y-8 animate-in fade-in duration-500">
@@ -69,12 +81,16 @@ export const Dashboard = () => {
             <Icons.Banknote className="h-4 w-4 text-muted-foreground shrink-0" />
           </CardHeader>
           <CardContent className="overflow-hidden">
-            <div
-              className="text-2xl font-bold text-foreground ltr:font-poppins rtl:font-somar truncate"
-              title={formatCurrency(250236.4)}
-            >
-              {formatCurrency(250236.4)}
-            </div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-3/4" />
+            ) : (
+              <div
+                className="text-2xl font-bold text-foreground ltr:font-poppins rtl:font-somar truncate"
+                title={formatCurrency(250236.4)}
+              >
+                {formatCurrency(250236.4)}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground mt-1 flex items-center truncate">
               <span className="text-emerald-600 font-medium flex items-center me-1 shrink-0">
                 <Icons.ChevronDown className="w-3 h-3 rotate-180 me-1" />
@@ -94,12 +110,16 @@ export const Dashboard = () => {
             <Icons.ShoppingCart className="h-4 w-4 text-muted-foreground shrink-0" />
           </CardHeader>
           <CardContent className="overflow-hidden">
-            <div
-              className="text-2xl font-bold text-foreground ltr:font-poppins rtl:font-somar truncate"
-              title={formatCurrency(125545.0)}
-            >
-              {formatCurrency(125545.0)}
-            </div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-3/4" />
+            ) : (
+              <div
+                className="text-2xl font-bold text-foreground ltr:font-poppins rtl:font-somar truncate"
+                title={formatCurrency(125545.0)}
+              >
+                {formatCurrency(125545.0)}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground mt-1 flex items-center truncate">
               <span className="text-amber-600 font-medium me-1 truncate">
                 10 {t('dashboard.open_invoices')}
@@ -117,12 +137,16 @@ export const Dashboard = () => {
             <Icons.ListOrdered className="h-4 w-4 text-muted-foreground shrink-0" />
           </CardHeader>
           <CardContent className="overflow-hidden">
-            <div
-              className="text-2xl font-bold text-foreground ltr:font-poppins rtl:font-somar truncate"
-              title={formatCurrency(9090.0)}
-            >
-              {formatCurrency(9090.0)}
-            </div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-3/4" />
+            ) : (
+              <div
+                className="text-2xl font-bold text-foreground ltr:font-poppins rtl:font-somar truncate"
+                title={formatCurrency(9090.0)}
+              >
+                {formatCurrency(9090.0)}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground mt-1 flex items-center truncate">
               <span className="text-primary font-medium me-1 truncate">
                 2 {t('dashboard.due_invoices')}
@@ -237,60 +261,65 @@ export const Dashboard = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {[
-                  {
-                    type: 'Bank',
-                    desc: 'Prélèvement Free Mob',
-                    date: '03 Nov. 2023',
-                    amount: 19.99,
-                    icon: Icons.Banknote,
-                    color: 'text-blue-500'
-                  },
-                  {
-                    type: 'Vente',
-                    desc: 'Facture #F2023-001',
-                    date: '03 Nov. 2023',
-                    amount: 450.9,
-                    icon: Icons.ShoppingCart,
-                    color: 'text-amber-500'
-                  },
-                  {
-                    type: 'Achat',
-                    desc: 'Achat Matériel Bureau',
-                    date: '03 Nov. 2023',
-                    amount: 276.0,
-                    icon: Icons.ListOrdered,
-                    color: 'text-purple-500'
-                  }
-                ]
-                  .filter(
-                    (item) =>
-                      normalizeString(item.type).includes(
-                        normalizeString(searchQuery)
-                      ) ||
-                      normalizeString(item.desc).includes(
-                        normalizeString(searchQuery)
+                {isLoading
+                  ? Array.from({ length: 3 }).map((_, i) => (
+                      <TableRow key={i}>
+                        <TableCell>
+                          <Skeleton className="h-4 w-12" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-4 w-full" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-4 w-24" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-4 w-16" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : (transactions || [])
+                      .filter(
+                        (item) =>
+                          normalizeString(item.journalCode).includes(
+                            normalizeString(searchQuery)
+                          ) ||
+                          normalizeString(item.description).includes(
+                            normalizeString(searchQuery)
+                          )
                       )
-                  )
-                  .map((item, i) => (
-                    <TableRow key={i}>
-                      <TableCell>
-                        <div className="flex items-center">
-                          {/* <item.icon className={`w-4 h-4 ${item.color} me-2`} /> */}
-                          <span className="text-xs font-medium text-muted-foreground">
-                            {item.type}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-medium">{item.desc}</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {item.date}
-                      </TableCell>
-                      <TableCell className="text-end font-bold ltr:font-poppins rtl:font-somar">
-                        {formatCurrency(item.amount)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                      .map((item, i) => (
+                        <TableRow key={i}>
+                          <TableCell>
+                            <div className="flex items-center">
+                              <span className="text-xs font-medium text-muted-foreground">
+                                {item.journalCode}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {item.description}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {new Date(item.entryDate).toLocaleDateString(
+                              language === 'ar' ? 'ar-DZ' : 'fr-DZ'
+                            )}
+                          </TableCell>
+                          <TableCell className="text-end font-bold ltr:font-poppins rtl:font-somar">
+                            {formatCurrency(item.totalDebit)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                {!isLoading && transactions?.length === 0 && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={4}
+                      className="text-center py-8 text-muted-foreground"
+                    >
+                      {t('common.no_data')}
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>

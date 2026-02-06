@@ -937,11 +937,11 @@ jobs:
       run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx"
 
     - name: Install frontend dependencies
-      working-directory: ./src/TOTALFISC.Web
+      working-directory: ./src/TotalFisc.UI
       run: npm ci
 
     - name: Run frontend tests
-      working-directory: ./src/TOTALFISC.Web
+      working-directory: ./src/TotalFisc.UI
       run: npm test
 
     - name: Upload test results

@@ -208,7 +208,7 @@ Seed Data: JSON files → EF Core seeder
 
 **Key Files:**
 ```
-TOTALFISC.Host/
+TotalFisc.Desktop/
 ├── App.xaml.cs                    # Application entry point
 ├── MainWindow.xaml.cs             # Main window with WebView2
 ├── Services/
@@ -255,7 +255,7 @@ TOTALFISC.Api/
 
 **Key Files:**
 ```
-TOTALFISC.Web/
+TotalFisc.UI/
 ├── src/
 │   ├── features/                 # Feature modules
 │   │   ├── accounting/

@@ -13,7 +13,7 @@ sleep 5
 
 # Start UI
 echo "🎨 Starting UI..."
-cd ../TOTALFISC.Web
+cd ../TotalFisc.UI
 npm run dev &
 UI_PID=$!
 

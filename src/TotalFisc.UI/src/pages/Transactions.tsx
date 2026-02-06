@@ -15,12 +15,17 @@ import {
 import { DataTable } from '../components/shared/data-table/data-table'
 import { getColumns } from '../components/transactions/columns'
 import { JournalEntryForm } from '../components/journal/JournalEntryForm'
+import { useJournalEntries } from '../hooks/use-journal-entries'
 import type { JournalEntry } from '../schemas/journal-entry'
 
 export const Transactions = () => {
   const { t } = useTranslation()
   const { language } = useI18n()
   const [isFormOpen, setIsFormOpen] = useState(false)
+
+  // For MVP, we use a placeholder or derived fiscal year ID
+  const fiscalYearId = 'current'
+  const { data: entries, isLoading } = useJournalEntries(fiscalYearId)
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat(language === 'ar' ? 'ar-DZ' : 'fr-DZ', {
@@ -30,50 +35,18 @@ export const Transactions = () => {
     }).format(amount)
   }
 
-  // Mock data for demonstration
-  const entries = [
-    {
-      id: 1,
-      entryNumber: 'JE-2026-001',
-      date: '2026-02-01',
-      journal: 'VTE',
-      reference: 'FAC-001',
-      description: t('mock_data.descriptions.sale_merchandise', {
-        client: t('mock_data.clients.client_abc')
-      }),
-      debit: 11900.0,
-      credit: 11900.0,
-      status: 'posted'
-    },
-    {
-      id: 2,
-      entryNumber: 'JE-2026-002',
-      date: '2026-02-02',
-      journal: 'ACH',
-      reference: 'FACH-045',
-      description: t('mock_data.descriptions.purchase_office_supplies'),
-      debit: 5950.0,
-      credit: 5950.0,
-      status: 'posted'
-    },
-    {
-      id: 3,
-      entryNumber: 'JE-2026-003',
-      date: '2026-02-05',
-      journal: 'BQ',
-      reference: 'VIR-123',
-      description: t('mock_data.descriptions.bank_transfer'),
-      debit: 25000.0,
-      credit: 25000.0,
-      status: 'draft'
-    }
-  ]
-
   const handleSaveEntry = (entry: JournalEntry) => {
     console.log('Saved entry:', entry)
     // Here we would call API to save
     // And refresher the table
   }
+
+  // Calculate stats from entries
+  const totalEntries = entries?.length || 0
+  const totalDebit =
+    entries?.reduce((acc, curr) => acc + curr.totalDebit, 0) || 0
+  const totalCredit =
+    entries?.reduce((acc, curr) => acc + curr.totalCredit, 0) || 0
 
   return (
     <div className="p-6 space-y-6 animate-in fade-in duration-500">
@@ -104,7 +77,9 @@ export const Transactions = () => {
               <p className="text-sm font-medium text-muted-foreground truncate">
                 {t('transactions.total_entries')}
               </p>
-              <p className="text-2xl font-bold mt-1 truncate">1,250</p>
+              <p className="text-2xl font-bold mt-1 truncate">
+                {totalEntries.toLocaleString()}
+              </p>
             </div>
             <Icons.FileText className="h-8 w-8 text-primary opacity-50 shrink-0" />
           </div>
@@ -118,9 +93,9 @@ export const Transactions = () => {
               </p>
               <p
                 className="text-2xl font-bold mt-1 ltr:font-poppins rtl:font-somar truncate"
-                title={formatCurrency(5200000)}
+                title={formatCurrency(totalDebit)}
               >
-                {formatCurrency(5200000)}
+                {formatCurrency(totalDebit)}
               </p>
             </div>
             <Icons.ChevronDown className="h-8 w-8 text-emerald-500 opacity-50 rotate-180 shrink-0" />
@@ -135,9 +110,9 @@ export const Transactions = () => {
               </p>
               <p
                 className="text-2xl font-bold mt-1 ltr:font-poppins rtl:font-somar truncate"
-                title={formatCurrency(5200000)}
+                title={formatCurrency(totalCredit)}
               >
-                {formatCurrency(5200000)}
+                {formatCurrency(totalCredit)}
               </p>
             </div>
             <Icons.ChevronDown className="h-8 w-8 text-blue-500 opacity-50 shrink-0" />
@@ -151,8 +126,17 @@ export const Transactions = () => {
                 {t('transactions.balance')}
               </p>
               <div className="flex items-center gap-2 mt-1 overflow-hidden">
-                <Badge variant="default" className="bg-emerald-500 truncate">
-                  {t('transactions.balanced')}
+                <Badge
+                  variant="default"
+                  className={
+                    totalDebit === totalCredit && totalEntries > 0
+                      ? 'bg-emerald-500 truncate'
+                      : 'bg-amber-500 truncate'
+                  }
+                >
+                  {totalDebit === totalCredit && totalEntries > 0
+                    ? t('transactions.balanced')
+                    : t('transactions.unbalanced')}
                 </Badge>
               </div>
             </div>
@@ -164,7 +148,7 @@ export const Transactions = () => {
       {/* Filters */}
       <Card className="p-4 shadow-sm border-border">
         <div className="flex flex-wrap items-end gap-4">
-          <div className="flex-1 min-w-[200px]">
+          <div className="flex-1 min-w-50">
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
               {t('transactions.journal')}
             </label>
@@ -185,7 +169,7 @@ export const Transactions = () => {
             </Select>
           </div>
 
-          <div className="flex-1 min-w-[200px]">
+          <div className="flex-1 min-w-50">
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
               {t('transactions.status')}
             </label>
@@ -203,7 +187,7 @@ export const Transactions = () => {
             </Select>
           </div>
 
-          <div className="flex-1 min-w-[200px]"></div>
+          <div className="flex-1 min-w-50"></div>
 
           <div className="flex-none">
             <Button variant="outline">
@@ -220,8 +204,9 @@ export const Transactions = () => {
           columns={getColumns(t, formatCurrency, (status) =>
             status === 'posted' ? 'bg-emerald-500' : 'bg-amber-500 text-white'
           )}
-          data={entries}
+          data={entries || []}
           searchKey="description"
+          isLoading={isLoading}
         />
       </Card>
 

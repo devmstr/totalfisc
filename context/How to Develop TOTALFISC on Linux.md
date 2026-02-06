@@ -105,7 +105,7 @@ dotnet ef database update
 
 ```bash
 # Navigate to frontend project
-cd src/TOTALFISC.Web
+cd src/TotalFisc.UI
 
 # Install dependencies
 npm install
@@ -120,7 +120,7 @@ npm run dev
 **Configure API URL in `.env.development`:**
 
 ```bash
-# src/TOTALFISC.Web/.env.development
+# src/TotalFisc.UI/.env.development
 VITE_API_BASE_URL=http://localhost:5015
 ```
 
@@ -157,7 +157,7 @@ totalfisc/
 │   │   ├── Repositories/
 │   │   └── Migrations/
 │   │
-│   ├── TOTALFISC.Web/           # React + Vite (cross-platform ✅)
+│   ├── TotalFisc.UI/           # React + Vite (cross-platform ✅)
 │   │   ├── src/
 │   │   │   ├── components/
 │   │   │   ├── pages/
@@ -166,10 +166,10 @@ totalfisc/
 │   │   ├── package.json
 │   │   └── vite.config.ts
 │   │
-│   ├── TOTALFISC.Host/          # WPF + WebView2 (Windows-only build, cross-platform restore ✅)
+│   ├── TotalFisc.Desktop/          # WPF + WebView2 (Windows-only build, cross-platform restore ✅)
 │   │   ├── MainWindow.xaml
 │   │   ├── App.xaml.cs
-│   │   └── TOTALFISC.Host.csproj
+│   │   └── TotalFisc.Desktop.csproj
 │   │
 │   └── TOTALFISC.Shared/        # Common utilities (cross-platform ✅)
 │       ├── Constants/
@@ -219,7 +219,7 @@ totalfisc/
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/src/TOTALFISC.Web/src"
+      "webRoot": "${workspaceFolder}/src/TotalFisc.UI/src"
     }
   ],
   "compounds": [
@@ -265,7 +265,7 @@ totalfisc/
       "type": "shell",
       "args": ["run", "dev"],
       "options": {
-        "cwd": "${workspaceFolder}/src/TOTALFISC.Web"
+        "cwd": "${workspaceFolder}/src/TotalFisc.UI"
       },
       "isBackground": true
     }
@@ -295,7 +295,7 @@ sleep 5
 
 # Start UI
 echo "🎨 Starting UI..."
-cd ../TOTALFISC.Web
+cd ../TotalFisc.UI
 npm run dev &
 UI_PID=$!
 

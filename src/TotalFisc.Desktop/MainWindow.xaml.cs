@@ -1,15 +1,9 @@
-﻿using System.Text;
+﻿using System;
+using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Microsoft.Web.WebView2.Core;
 
-namespace TOTALFISC.Host;
+namespace TotalFisc.Desktop;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
@@ -19,5 +13,30 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        InitializeWebView();
+    }
+
+    private async void InitializeWebView()
+    {
+        try
+        {
+            // Wait for CoreWebView2 to be ready
+            await webView.EnsureCoreWebView2Async(null);
+
+            // Determine environment (Dev vs Prod)
+#if DEBUG
+            const string url = "http://localhost:5173";
+#else
+            // In Production, point to the build output folder
+            string prodPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot", "index.html");
+            string url = File.Exists(prodPath) ? $"file://{prodPath}" : "http://localhost:5000"; // Fallback to API if folder missing
+#endif
+
+            webView.CoreWebView2.Navigate(url);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"WebView2 failed to initialize: {ex.Message}", "Initialization Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 }
