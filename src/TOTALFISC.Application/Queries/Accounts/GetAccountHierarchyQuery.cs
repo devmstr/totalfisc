@@ -22,7 +22,7 @@ public class GetAccountHierarchyQueryHandler : IRequestHandler<GetAccountHierarc
         
         return accounts.Select(a => new AccountDto
         {
-            Id = a.Id,
+            Id = a.Id.ToString(),
             AccountNumber = a.Number.Value,
             Label = a.Label,
             IsSummary = a.IsSummary,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TOTALFISC.Domain.Accounting.Enums;
 using TOTALFISC.Domain.Common;
+using TOTALFISC.Domain.ValueObjects;
 
 namespace TOTALFISC.Domain.Accounting.Entities;
 
@@ -10,7 +11,7 @@ public class JournalEntry : AggregateRoot
 {
     private readonly List<JournalLine> _lines = new();
 
-    public string FiscalYearId { get; private set; } = null!;
+    public Guid FiscalYearId { get; private set; } // Matches BaseEntity.Id
     public string JournalCode { get; private set; } = null!;
     public int EntryNumber { get; private set; }
     public DateTime EntryDate { get; private set; }
@@ -22,14 +23,14 @@ public class JournalEntry : AggregateRoot
     public string? PostedBy { get; private set; }
 
     public IReadOnlyCollection<JournalLine> Lines => _lines.AsReadOnly();
-    public decimal TotalDebit => _lines.Sum(l => l.Debit);
-    public decimal TotalCredit => _lines.Sum(l => l.Credit);
+    public Money TotalDebit => Money.FromMillimes(_lines.Sum(l => l.Debit.AmountInMillimes));
+    public Money TotalCredit => Money.FromMillimes(_lines.Sum(l => l.Credit.AmountInMillimes));
 
     // Required by EF Core
     private JournalEntry() { }
 
     public JournalEntry(
-        string fiscalYearId,
+        Guid fiscalYearId,
         string journalCode,
         int entryNumber,
         DateTime entryDate,
@@ -54,7 +55,7 @@ public class JournalEntry : AggregateRoot
         _lines.Add(line);
     }
 
-    public void RemoveLine(string lineId)
+    public void RemoveLine(Guid lineId)
     {
         if (Status == EntryStatus.Posted)
             throw new InvalidOperationException("Cannot remove lines from a posted entry.");
@@ -73,7 +74,7 @@ public class JournalEntry : AggregateRoot
 
     public bool IsBalanced()
     {
-        return _lines.Count >= 2 && Math.Abs(TotalDebit - TotalCredit) < 0.001m;
+        return _lines.Count >= 2 && TotalDebit.AmountInMillimes == TotalCredit.AmountInMillimes;
     }
 
     public void Post(string userId)

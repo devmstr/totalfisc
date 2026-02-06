@@ -2,9 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TOTALFISC.Domain.Accounting.Interfaces;
-using TOTALFISC.Persistence.Repositories;
+using TOTALFISC.Infrastructure.Repositories;
 
-namespace TOTALFISC.Persistence;
+namespace TOTALFISC.Infrastructure;
 
 public static class DependencyInjection
 {

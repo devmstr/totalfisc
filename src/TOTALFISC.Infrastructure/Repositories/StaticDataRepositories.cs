@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TOTALFISC.Domain.Accounting.Entities;
 using TOTALFISC.Domain.Accounting.Interfaces;
 
-namespace TOTALFISC.Persistence.Repositories;
+namespace TOTALFISC.Infrastructure.Repositories;
 
 public class FiscalYearRepository : RepositoryBase<FiscalYear>, IFiscalYearRepository
 {

@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using TOTALFISC.Domain.Accounting.Entities;
 
-namespace TOTALFISC.Persistence;
+namespace TOTALFISC.Infrastructure;
 
 public class ApplicationDbContext : DbContext
 {

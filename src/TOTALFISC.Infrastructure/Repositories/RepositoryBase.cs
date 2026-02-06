@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TOTALFISC.Domain.Common;
 
-namespace TOTALFISC.Persistence.Repositories;
+namespace TOTALFISC.Infrastructure.Repositories;
 
 public abstract class RepositoryBase<T> : IRepository<T> where T : AggregateRoot
 {
@@ -14,7 +14,7 @@ public abstract class RepositoryBase<T> : IRepository<T> where T : AggregateRoot
         _context = context;
     }
 
-    public virtual async Task<T?> GetByIdAsync(string id)
+    public virtual async Task<T?> GetByIdAsync(Guid id)
     {
         return await _context.Set<T>().FindAsync(id);
     }

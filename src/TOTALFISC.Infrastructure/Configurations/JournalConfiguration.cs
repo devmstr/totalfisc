@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TOTALFISC.Domain.Accounting.Entities;
+using TOTALFISC.Domain.ValueObjects;
 
-namespace TOTALFISC.Persistence.Configurations;
+namespace TOTALFISC.Infrastructure.Configurations;
 
 public class JournalEntryConfiguration : IEntityTypeConfiguration<JournalEntry>
 {
@@ -53,9 +54,15 @@ public class JournalLineConfiguration : IEntityTypeConfiguration<JournalLine>
             .HasMaxLength(200);
 
         builder.Property(x => x.Debit)
+            .HasConversion(v => v.AmountInMillimes, v => Money.FromMillimes(v))
+            .HasColumnType("INTEGER")
+            .HasColumnName("DebitMillimes")
             .IsRequired();
 
         builder.Property(x => x.Credit)
+            .HasConversion(v => v.AmountInMillimes, v => Money.FromMillimes(v))
+            .HasColumnType("INTEGER")
+            .HasColumnName("CreditMillimes")
             .IsRequired();
 
         builder.HasOne<Account>()

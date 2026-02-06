@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TOTALFISC.Domain.Accounting.Entities;
 
-namespace TOTALFISC.Persistence.Configurations;
+namespace TOTALFISC.Infrastructure.Configurations;
 
 public class FiscalYearConfiguration : IEntityTypeConfiguration<FiscalYear>
 {

@@ -48,7 +48,7 @@ public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,
             // 4. Save
             await _accountRepository.AddAsync(account);
 
-            return Result<string>.Success(account.Id);
+            return Result<string>.Success(account.Id.ToString());
         }
         catch (ArgumentException ex)
         {

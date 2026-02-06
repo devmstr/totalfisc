@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using TOTALFISC.Domain.Accounting.Entities;
 using TOTALFISC.Domain.Accounting.Interfaces;
 
-namespace TOTALFISC.Persistence.Repositories;
+namespace TOTALFISC.Infrastructure.Repositories;
 
 public class AccountRepository : RepositoryBase<Account>, IAccountRepository
 {
@@ -35,14 +35,14 @@ public class JournalEntryRepository : RepositoryBase<JournalEntry>, IJournalEntr
     {
     }
 
-    public override async Task<JournalEntry?> GetByIdAsync(string id)
+    public override async Task<JournalEntry?> GetByIdAsync(Guid id)
     {
         return await _context.JournalEntries
             .Include(e => e.Lines)
             .FirstOrDefaultAsync(e => e.Id == id);
     }
 
-    public async Task<int> GetNextEntryNumberAsync(string fiscalYearId, string journalCode)
+    public async Task<int> GetNextEntryNumberAsync(Guid fiscalYearId, string journalCode)
     {
         var maxNumber = await _context.JournalEntries
             .Where(e => e.FiscalYearId == fiscalYearId && e.JournalCode == journalCode)
@@ -51,7 +51,7 @@ public class JournalEntryRepository : RepositoryBase<JournalEntry>, IJournalEntr
         return maxNumber + 1;
     }
 
-    public async Task<IEnumerable<JournalEntry>> GetByFiscalYearAsync(string fiscalYearId)
+    public async Task<IEnumerable<JournalEntry>> GetByFiscalYearAsync(Guid fiscalYearId)
     {
         return await _context.JournalEntries
             .Where(e => e.FiscalYearId == fiscalYearId)

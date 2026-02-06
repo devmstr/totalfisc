@@ -17,19 +17,19 @@ public class GetJournalEntryListQueryHandler : IRequestHandler<GetJournalEntryLi
 
     public async Task<List<JournalEntryDto>> Handle(GetJournalEntryListQuery request, CancellationToken cancellationToken)
     {
-        var entries = await _repository.GetByFiscalYearAsync(request.FiscalYearId);
+        var entries = await _repository.GetByFiscalYearAsync(Guid.Parse(request.FiscalYearId));
 
         return entries.Select(e => new JournalEntryDto
         {
-            Id = e.Id,
+            Id = e.Id.ToString(),
             EntryNumber = e.EntryNumber,
             EntryDate = e.EntryDate,
             JournalCode = e.JournalCode,
             Reference = e.Reference,
             Description = e.Description,
             Status = e.Status.ToString(),
-            TotalDebit = e.TotalDebit,
-            TotalCredit = e.TotalCredit,
+            TotalDebit = e.TotalDebit.Amount,
+            TotalCredit = e.TotalCredit.Amount,
             PostedAt = e.PostedAt,
             PostedBy = e.PostedBy,
             ValidationHash = e.ValidationHash,
@@ -37,11 +37,11 @@ public class GetJournalEntryListQueryHandler : IRequestHandler<GetJournalEntryLi
             CreatedBy = e.CreatedBy,
             Lines = e.Lines.Select(l => new JournalLineDto
             {
-                AccountId = l.AccountId,
-                ThirdPartyId = l.ThirdPartyId,
+                AccountId = l.AccountId.ToString(),
+                ThirdPartyId = l.ThirdPartyId?.ToString(),
                 Label = l.Label,
-                Debit = l.Debit,
-                Credit = l.Credit
+                Debit = l.Debit.Amount,
+                Credit = l.Credit.Amount
             }).ToList()
         }).ToList();
     }

@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TOTALFISC.Application\TOTALFISC.Application.csproj" />
-    <ProjectReference Include="..\TOTALFISC.Persistence\TOTALFISC.Persistence.csproj" />
+    <ProjectReference Include="..\TOTALFISC.Infrastructure\TOTALFISC.Infrastructure.csproj" />
     <ProjectReference Include="..\TOTALFISC.Infrastructure\TOTALFISC.Infrastructure.csproj" />
     <ProjectReference Include="..\TOTALFISC.Shared\TOTALFISC.Shared.csproj" />
   </ItemGroup>

@@ -1,20 +1,28 @@
 using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace TOTALFISC.Domain.Common;
 
 public abstract class Entity
 {
-    public string Id { get; protected set; } = Guid.NewGuid().ToString();
+    [Key]
+    public Guid Id { get; set; } = Guid.NewGuid();
+
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset LastModified { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    [Timestamp]
+    public byte[] RowVersion { get; set; }
 
     public override bool Equals(object? obj)
     {
         if (obj is not Entity other) return false;
         if (ReferenceEquals(this, other)) return true;
         if (GetType() != other.GetType()) return false;
-        if (Id == null || other.Id == null) return false;
-
-        return Id == other.Id;
+        
+        return Id == other.Id && Id != Guid.Empty;
     }
 
     public static bool operator ==(Entity? a, Entity? b)
